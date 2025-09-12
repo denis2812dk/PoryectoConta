@@ -1,0 +1,1 @@
+export default function Catalogo(){ return <h1>Catálogo de Cuentas</h1>; }
