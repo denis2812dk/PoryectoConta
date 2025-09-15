@@ -9,15 +9,15 @@ import java.util.List;
 
 public class AsientoRequest {
 
-    public static class PartidaDTO{
+    public static class PartidaDTO {
 
         public String cuentaId;
         public BigDecimal debe = BigDecimal.ZERO;
         public BigDecimal haber = BigDecimal.ZERO;
-
+    }
         public LocalDate fecha;
         @NotBlank public String descripcion;
         @Size(min = 2) public List<PartidaDTO> partidas;
-    }
+
 
 }

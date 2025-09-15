@@ -1,0 +1,13 @@
+package com.dennis.curso.spring.contabilidad.proyectocontabilidad.service;
+
+import com.dennis.curso.spring.contabilidad.proyectocontabilidad.model.Asiento;
+import com.dennis.curso.spring.contabilidad.proyectocontabilidad.model.AsientoRequest;
+import com.dennis.curso.spring.contabilidad.proyectocontabilidad.model.Cuenta;
+
+import java.util.List;
+
+public interface AsientoService {
+
+    List<Asiento> findAll();
+    Asiento save(AsientoRequest re);
+}
