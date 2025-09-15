@@ -1,0 +1,23 @@
+package com.dennis.curso.spring.contabilidad.proyectocontabilidad.model;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+
+public class AsientoRequest {
+
+    public static class PartidaDTO{
+
+        public String cuentaId;
+        public BigDecimal debe = BigDecimal.ZERO;
+        public BigDecimal haber = BigDecimal.ZERO;
+
+        public LocalDate fecha;
+        @NotBlank public String descripcion;
+        @Size(min = 2) public List<PartidaDTO> partidas;
+    }
+
+}
