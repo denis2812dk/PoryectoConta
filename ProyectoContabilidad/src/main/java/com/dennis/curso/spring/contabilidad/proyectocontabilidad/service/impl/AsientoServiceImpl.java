@@ -8,12 +8,13 @@ import com.dennis.curso.spring.contabilidad.proyectocontabilidad.model.Partida;
 import com.dennis.curso.spring.contabilidad.proyectocontabilidad.repository.AsientoRepository;
 import com.dennis.curso.spring.contabilidad.proyectocontabilidad.service.AsientoService;
 import com.dennis.curso.spring.contabilidad.proyectocontabilidad.service.CuentaService;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
+@Service
 public class AsientoServiceImpl  implements AsientoService {
 
         private final AsientoRepository repo;
