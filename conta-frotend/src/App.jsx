@@ -3,7 +3,7 @@ import {
   CssBaseline, AppBar, Toolbar, Typography, IconButton, Box, useMediaQuery
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 
 import Sidebar from "./components//Sidebar"
 
@@ -15,48 +15,58 @@ import LibroDiario from "./pages/LibroDiario";
 import LibroMayor from "./pages/LibroMayor";
 
 
-const drawerWidth = 260;
+const drawerWidth = 0;
 
 export default function App() {
   const [open, setOpen] = React.useState(true);
   const isMobile = useMediaQuery("(max-width:900px)");
+  const location = useLocation();
+  const isHome = location.pathname === "/";
 
   React.useEffect(() => { setOpen(!isMobile); }, [isMobile]);
   const toggle = () => setOpen(v => !v);
+
+  // On Home, force sidebar open and persistent, and disable toggle button
+  const sidebarOpen = isHome ? true : open;
+  const sidebarVariant = isHome ? "persistent" : (isMobile ? "temporary" : "persistent");
+  const showToggleButton = !isHome;
+  const applyLeftMargin = sidebarOpen && sidebarVariant === "persistent";
 
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
 
-
-
       <Sidebar
-        open={open}
-        onClose={toggle}
+        open={sidebarOpen}
+        onClose={showToggleButton ? toggle : undefined}
         drawerWidth={260}
-        variant={isMobile ? "temporary" : "persistent"}
+        variant={sidebarVariant}
       />
-      <IconButton
-        onClick={toggle}
-        aria-label="Abrir menú"
-        sx={{
-          position: "fixed",
-          top: 12,
-          left: 12,
-          zIndex: (t) => t.zIndex.drawer + 2,
-          bgcolor: "#FFFFFF",
-          border: "1px solid #E5E7EB",
-          boxShadow: 1
-        }}
-      >
-        <MenuIcon />
-      </IconButton>
+
+      {showToggleButton && (
+        <IconButton
+          onClick={toggle}
+          aria-label="Abrir menú"
+          sx={{
+            position: "fixed",
+            top: 12,
+            left: 12,
+            zIndex: (t) => t.zIndex.drawer + 2,
+            bgcolor: "#ffffff",
+            border: "1px solid #E5E7EB",
+            boxShadow: 1
+          }}
+        >
+          <MenuIcon />
+        </IconButton>
+      )}
+
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
-          ...(open && !isMobile ? { ml: `${drawerWidth}px` } : {})
+          p: isHome ? 0 : 3,
+          ...(applyLeftMargin ? { ml: `${drawerWidth}px` } : {})
         }}
       >
         <Routes>

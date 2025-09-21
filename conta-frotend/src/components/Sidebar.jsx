@@ -86,7 +86,7 @@ export default function Sidebar({
         )}
       </Toolbar>
 
-      <Divider sx={{ borderColor: "#E5E7EB" }} />
+      <Divider sx={{ borderColor: "#ffffff" }} />
 
       <Box sx={{ py: 1 }}>
         <List sx={{ px: open ? 1 : 0.5 }}>
@@ -107,7 +107,7 @@ export default function Sidebar({
                   borderRadius: 2,
                   gap: open ? 1 : 0,
                   "&.active": {
-                    bgcolor: "#EEF2FF",
+                    bgcolor: "#ffffff",
                   },
                   "&:hover": {
                     bgcolor: "#F1F5F",
