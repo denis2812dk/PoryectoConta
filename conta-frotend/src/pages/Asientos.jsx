@@ -94,147 +94,151 @@ export default function Asientos() {
   const expandAll = () => setExpanded(new Set(filtered.map((f) => f.id)));
   const collapseAll = () => setExpanded(new Set());
 
-  return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100">
-        {/* Encabezado */}
-        <div className="px-6 pt-6 pb-3 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Asientos</h1>
-            <p className="text-sm text-gray-500">Registra asientos y consulta el libro diario generado.</p>
-          </div>
-          <div className="text-sm text-gray-600">{loading ? "Cargando…" : `Total: ${rows.length} asientos`}</div>
-        </div>
+    return (
+        <div className="min-h-screen w-full overflow-x-hidden pr-4 sm:pr-6 bg-slate-50 text-slate-800 flex flex-col">
+            {/* Header sticky, consistente con Home y Catálogo */}
+            <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur">
+                <div className="w-full flex h-16 items-center justify-between px-4">
+                    <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 ml-20">Asientos contables</h1>
+                    <div className="text-sm text-slate-600 mr-4">{loading ? "Cargando…" : `Total: ${rows.length} asientos`}</div>
+                </div>
+            </header>
 
-        {/* Formulario */}
-        <div className="px-6 pb-6">
-          <AsientoForm onSaved={cargar} />
-        </div>
-      </div>
+            <main className="flex-1 pt-6 md:pt-8 px-2 sm:px-6 lg:px-8 w-full">
+                <div className="w-full flex flex-col gap-6 min-h-full items-stretch justify-start py-4 md:py-12">
+                    {/* Bloque del formulario */}
+                    <section className="rounded-2xl border border-slate-200 bg-white shadow-sm px-6 py-8">
+                        <div className="pb-4">
+                            <h2 className="text-xl font-semibold text-slate-900">Registrar asiento</h2>
+                            <p className="text-slate-500 text-sm">Agrega nuevos asientos al libro diario.</p>
+                        </div>
+                        <AsientoForm onSaved={cargar} />
+                    </section>
 
-      {/* Herramientas de lista */}
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100">
-        <div className="px-6 pt-6 pb-4">
-          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
-              <div className="relative">
-                <input
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder="Buscar por id, descripción o cuenta…"
-                  className="w-full border border-gray-300 rounded-lg p-2.5 pr-10 bg-white outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">⌕</span>
-              </div>
-              <input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="border border-gray-300 rounded-lg p-2.5 bg-white outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Desde"
-                aria-label="Desde"
-              />
-              <input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="border border-gray-300 rounded-lg p-2.5 bg-white outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Hasta"
-                aria-label="Hasta"
-              />
-              <select
-                value={`${sort.key}:${sort.asc ? "asc" : "desc"}`}
-                onChange={(e) => {
-                  const [key, dir] = e.target.value.split(":");
-                  setSort({ key, asc: dir === "asc" });
-                }}
-                className="border border-gray-300 rounded-lg p-2.5 bg-white outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="fecha:desc">Fecha (recientes primero)</option>
-                <option value="fecha:asc">Fecha (antiguos primero)</option>
-                <option value="id:asc">ID ↑</option>
-                <option value="id:desc">ID ↓</option>
-              </select>
-            </div>
+                    {/* Herramientas de lista (filtros y acciones) */}
+                    <section className="rounded-2xl border border-slate-200 bg-white shadow-sm px-6 py-6">
+                        <h3 className="font-semibold text-slate-800 mb-3">Buscar y organizar</h3>
+                        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2 w-full text-sm">
+                                <div className="relative">
+                                    <input
+                                        value={q}
+                                        onChange={(e) => setQ(e.target.value)}
+                                        placeholder="Buscar por id, descripción o cuenta…"
+                                        className="w-full border border-slate-300 rounded-lg h-10 px-3 pr-9 bg-white outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    />
+                                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">⌕</span>
+                                </div>
+                                <input
+                                    type="date"
+                                    value={dateFrom}
+                                    onChange={(e) => setDateFrom(e.target.value)}
+                                    className="border border-slate-300 rounded-lg h-10 px-3 bg-white outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    placeholder="Desde"
+                                    aria-label="Desde"
+                                />
+                                <input
+                                    type="date"
+                                    value={dateTo}
+                                    onChange={(e) => setDateTo(e.target.value)}
+                                    className="border border-slate-300 rounded-lg h-10 px-3 bg-white outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    placeholder="Hasta"
+                                    aria-label="Hasta"
+                                />
+                                <select
+                                    value={`${sort.key}:${sort.asc ? "asc" : "desc"}`}
+                                    onChange={(e) => {
+                                        const [key, dir] = e.target.value.split(":");
+                                        setSort({ key, asc: dir === "asc" });
+                                    }}
+                                    className="border border-slate-300 rounded-lg h-10 px-3 bg-white outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                >
+                                    <option value="fecha:desc">Fecha (recientes primero)</option>
+                                    <option value="fecha:asc">Fecha (antiguos primero)</option>
+                                    <option value="id:asc">ID ↑</option>
+                                    <option value="id:desc">ID ↓</option>
+                                </select>
+                            </div>
 
-            <div className="flex gap-2">
-              <button onClick={cargar} className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white">Refrescar</button>
-              <button onClick={expandAll} className="px-4 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50">Expandir todo</button>
-              <button onClick={collapseAll} className="px-4 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50">Colapsar todo</button>
-            </div>
-          </div>
-        </div>
+                            <div className="flex gap-2 text-sm">
+                                <button onClick={cargar} className="inline-flex items-center justify-center h-10 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-black font-semibold shadow-sm ring-1 ring-blue-600/10">Refrescar</button>
+                                <button onClick={expandAll} className="inline-flex items-center justify-center h-10 px-3 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700">Expandir </button>
+                                <button onClick={collapseAll} className="inline-flex items-center justify-center h-10 px-3 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700">Colapsar </button>
+                            </div>
+                        </div>
+                    </section>
 
-        {/* Tabla */}
-        <div className="px-6 pb-6">
-          <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-            <table className="min-w-full text-sm">
-              <thead className="sticky top-0 bg-gray-100 text-gray-700 text-left border-b">
-                <tr>
-                  <th className="p-3 font-semibold cursor-pointer select-none" onClick={() => toggleSort("fecha")}>
-                    Fecha {sort.key === "fecha" ? (sort.asc ? "↑" : "↓") : ""}
-                  </th>
-                  <th className="p-3 font-semibold cursor-pointer select-none" onClick={() => toggleSort("id")}>
-                    ID {sort.key === "id" ? (sort.asc ? "↑" : "↓") : ""}
-                  </th>
-                  <th className="p-3 font-semibold">Descripción</th>
-                  <th className="p-3 font-semibold">Detalle</th>
-                  <th className="p-3 font-semibold text-center">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading && (
-                  <tr>
-                    <td colSpan={5} className="py-10 text-center text-gray-500">Cargando…</td>
-                  </tr>
-                )}
-                {!loading && filtered.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="py-10 text-center text-gray-500">No hay asientos que coincidan con el filtro.</td>
-                  </tr>
-                )}
-                {!loading && filtered.map((a, i) => {
-                  const isOpen = expanded.has(a.id);
-                  return (
-                    <tr key={a.id} className={i % 2 ? "bg-white" : "bg-gray-50"}>
-                      <td className="border-t p-2.5 align-top whitespace-nowrap">{a.fecha}</td>
-                      <td className="border-t p-2.5 align-top font-mono">{a.id}</td>
-                      <td className="border-t p-2.5 align-top">{a.descripcion}</td>
-                      <td className="border-t p-2.5 align-top">
-                        {isOpen ? (
-                          <ul className="space-y-1">
-                            {(a.partidas || []).map((p, idx) => (
-                              <li key={idx} className="flex flex-wrap items-baseline gap-2">
-                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border bg-white">
-                                  {p.cuenta?.id} — {p.cuenta?.nombre}
-                                </span>
-                                <span className="font-mono">D {Number(p.debe || 0).toFixed(2)}</span>
-                                <span className="font-mono">H {Number(p.haber || 0).toFixed(2)}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <span className="text-gray-500">(detalle oculto)</span>
-                        )}
-                      </td>
-                      <td className="border-t p-2.5 align-top text-center">
-                        <button
-                          type="button"
-                          className="px-3 py-1.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-50"
-                          onClick={() => toggleRow(a.id)}
-                        >
-                          {isOpen ? "Ocultar" : "Ver detalle"}
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <div className="px-2 pt-3 text-xs text-gray-500">Mostrando {loading ? 0 : filtered.length} de {rows.length} asientos</div>
+                    {/* Tabla */}
+                    <section className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-md">
+                        <div className="overflow-x-auto max-h-[70vh]">
+                            <table className="min-w-full text-sm">
+                                <thead className="sticky top-0 bg-slate-50 text-slate-700 text-left border-b uppercase text-xs tracking-wide">
+                                <tr>
+                                    <th className="py-3 px-3 font-semibold cursor-pointer select-none" onClick={() => toggleSort("fecha")}>
+                                        Fecha {sort.key === "fecha" ? (sort.asc ? "↑" : "↓") : ""}
+                                    </th>
+                                    <th className="py-3 px-3 font-semibold cursor-pointer select-none" onClick={() => toggleSort("id")}>
+                                        ID {sort.key === "id" ? (sort.asc ? "↑" : "↓") : ""}
+                                    </th>
+                                    <th className="py-3 px-3 font-semibold">Descripción</th>
+                                    <th className="py-3 px-3 font-semibold">Detalle</th>
+                                    <th className="py-3 px-3 font-semibold text-center">Acciones</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {loading && (
+                                    <tr>
+                                        <td colSpan={5} className="py-10 text-center text-slate-500">Cargando…</td>
+                                    </tr>
+                                )}
+                                {!loading && filtered.length === 0 && (
+                                    <tr>
+                                        <td colSpan={5} className="py-10 text-center text-slate-500">No hay asientos que coincidan con el filtro.</td>
+                                    </tr>
+                                )}
+                                {!loading && filtered.map((a, i) => {
+                                    const isOpen = expanded.has(a.id);
+                                    return (
+                                        <tr key={a.id} className="hover:bg-slate-50">
+                                            <td className="py-2.5 px-3 border-t align-top whitespace-nowrap">{a.fecha}</td>
+                                            <td className="py-2.5 px-3 border-t align-top font-mono text-slate-800">{a.id}</td>
+                                            <td className="py-2.5 px-3 border-t align-top">{a.descripcion}</td>
+                                            <td className="py-2.5 px-3 border-t align-top">
+                                                {isOpen ? (
+                                                    <ul className="space-y-1">
+                                                        {(a.partidas || []).map((p, idx) => (
+                                                            <li key={idx} className="flex flex-wrap items-baseline gap-2">
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border bg-white">
+                                    {p.cuenta?.id} — {p.cuenta?.nombre}
+                                  </span>
+                                                                <span className="font-mono">D {Number(p.debe || 0).toFixed(2)}</span>
+                                                                <span className="font-mono">H {Number(p.haber || 0).toFixed(2)}</span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                ) : (
+                                                    <span className="text-slate-500">(detalle oculto)</span>
+                                                )}
+                                            </td>
+                                            <td className="py-2.5 px-3 border-t align-top text-center">
+                                                <button
+                                                    type="button"
+                                                    className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700"
+                                                    onClick={() => toggleRow(a.id)}
+                                                >
+                                                    {isOpen ? "Ocultar" : "Ver detalle"}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="px-3 py-3 text-xs text-slate-500">Mostrando {loading ? 0 : filtered.length} de {rows.length} asientos</div>
+                    </section>
+                </div>
+            </main>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

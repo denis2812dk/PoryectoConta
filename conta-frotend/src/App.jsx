@@ -5,7 +5,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import { Routes, Route, useLocation } from "react-router-dom";
 
-import Sidebar from "./components//Sidebar"
+import Sidebar from "./components/Sidebar"
 
 import Asientos from "./pages/Asientos";
 import Catalogo from "./pages/CatalogoCuentas";
@@ -15,7 +15,7 @@ import LibroDiario from "./pages/LibroDiario";
 import LibroMayor from "./pages/LibroMayor";
 
 
-const drawerWidth = 0;
+const drawerWidth = 260;
 
 export default function App() {
   const [open, setOpen] = React.useState(true);
@@ -30,20 +30,32 @@ export default function App() {
   const sidebarOpen = isHome ? true : open;
   const sidebarVariant = isHome ? "persistent" : (isMobile ? "temporary" : "persistent");
   const showToggleButton = !isHome;
-  const applyLeftMargin = sidebarOpen && sidebarVariant === "persistent";
+  //const applyLeftMargin = sidebarOpen && sidebarVariant === "persistent";
+
+    const layoutConfig = {
+        "/": { noPadding: true, bg: "transparent" },
+        "/Catalogo": { noPadding: true, bg: "transparent" },
+        default: { noPadding: false, padding: { xs: 2, sm: 2.5, md: 3 }, bg: "transparent" },
+    };
+    const pageOpts = layoutConfig[location.pathname] || layoutConfig.default;
+
+    const applyLeftMargin = !isHome && sidebarOpen && sidebarVariant === "persistent";
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", width: "100vw", minHeight: "100vh", boxSizing: "border-box", marginRight: "8px" }}>
       <CssBaseline />
 
-      <Sidebar
-        open={sidebarOpen}
-        onClose={showToggleButton ? toggle : undefined}
-        drawerWidth={260}
-        variant={sidebarVariant}
-      />
+        {!isHome && (
+            <Sidebar
+                open={sidebarOpen}
+                onClose={showToggleButton ? toggle : undefined}
+                drawerWidth={drawerWidth}
+                variant={sidebarVariant}
+            />
+        )}
 
-      {showToggleButton && (
+
+        {showToggleButton && (
         <IconButton
           onClick={toggle}
           aria-label="Abrir menú"
@@ -65,8 +77,10 @@ export default function App() {
         component="main"
         sx={{
           flexGrow: 1,
-          p: isHome ? 0 : 3,
-          ...(applyLeftMargin ? { ml: `${drawerWidth}px` } : {})
+            height: "100vh",
+            bgcolor: pageOpts.bg,
+            p: pageOpts.noPadding ? 0 : (pageOpts.padding || { xs: 2, sm: 2.5, md: 3 }),
+            //ml: applyLeftMargin ? `${drawerWidth}px` : 0,
         }}
       >
         <Routes>
