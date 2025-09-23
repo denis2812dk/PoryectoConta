@@ -28,7 +28,7 @@ export default function App() {
 
   // On Home, force sidebar open and persistent, and disable toggle button
   const sidebarOpen = isHome ? true : open;
-  const sidebarVariant = isHome ? "persistent" : (isMobile ? "temporary" : "persistent");
+  const sidebarVariant = isHome ? "permanent" : (isMobile ? "temporary" : "permanent");
   const showToggleButton = !isHome;
   //const applyLeftMargin = sidebarOpen && sidebarVariant === "persistent";
 
