@@ -1,16 +1,18 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import logo from '../multimedia/logo.png';
 export default function Home() {
     return (
 
         <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
-            <header className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 bg-white">
-                <div className="mx-auto max-w-7xl flex h-16 items-center justify-center px-4">
-                    <h1 className="text-2xl font-bold text-slate-900">
-                        Conta App
-                    </h1>
-                </div>
-            </header>
+            <header className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 bg-white shadow-sm">
+    <div className="mx-auto max-w-7xl flex h-16 items-center justify-center px-4">
+        <img src={logo} alt="Logo" className="h-10 w-10 mr-4 rounded-full shadow" />
+        <h1 className="text-2xl uppercase font-bold text-slate-900">
+            Conta Pro
+        </h1>
+    </div>
+</header>
 
             <main className="flex-1 pt-16 px-4 sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-7xl w-full flex flex-col gap-8 h-full items-stretch justify-start py-6 md:py-8">
@@ -27,10 +29,10 @@ export default function Home() {
                                 </p>
 
                                 <div className="mt-8 flex flex-wrap items-center gap-3">
-                                    <Link to="/Asientos" className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                    <Link to="/Asientos" className="rounded-lg border-4 border-blue-200 bg-blue-50 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-100 transition">
                                         Registrar asiento
                                     </Link>
-                                    <Link to="/Catalogo" className="inline-flex items-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow hover:bg-slate-50 border border-slate-200">
+                                    <Link to="/Catalogo" className="rounded-lg border-4 border-emerald-200 bg-emerald-50 px-3 py-2 text-center text-sm font-medium text-emerald-700 hover:bg-emerald-100 transition">
                                         Ver catálogo de cuentas
                                     </Link>
                                 </div>
@@ -70,12 +72,12 @@ export default function Home() {
                     <section className="w-full rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                         <h3 className="text-base font-semibold text-slate-900">Acciones rápidas</h3>
                         <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                            <Link to="/Asientos" className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-center text-sm font-medium text-slate-700 hover:bg-slate-100">Nuevo asiento</Link>
-                            <Link to="/Catalogo" className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-center text-sm font-medium text-slate-700 hover:bg-slate-100">Cuentas</Link>
-                            <Link to="/Consultas" className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-center text-sm font-medium text-slate-700 hover:bg-slate-100">Consultas</Link>
-                            <Link to="/LibroDiario" className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-center text-sm font-medium text-slate-700 hover:bg-slate-100">Libro Diario</Link>
-                            <Link to="/LibroMayor" className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-center text-sm font-medium text-slate-700 hover:bg-slate-100">Libro Mayor</Link>
-                        </div>
+                            <Link to="/Asientos" className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-100 transition">Nuevo asiento</Link>
+                            <Link to="/Catalogo" className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-center text-sm font-medium text-emerald-700 hover:bg-emerald-100 transition">Cuentas</Link>
+                            <Link to="/Consultas" className="rounded-lg border border-purple-200 bg-purple-50 px-3 py-2 text-center text-sm font-medium text-purple-700 hover:bg-purple-100 transition">Consultas</Link>
+                            <Link to="/LibroDiario" className="rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-center text-sm font-medium text-orange-700 hover:bg-orange-100 transition">Libro Diario</Link>
+                            <Link to="/LibroMayor" className="rounded-lg border border-pink-400 bg-pink-500 px-3 py-2 text-center text-sm font-medium text-white hover:bg-pink-600 transition">Libro Mayor</Link>
+                            </div>
                     </section>
 
                     <section className="w-full grid grid-cols-1 lg:grid-cols-3 gap-4">

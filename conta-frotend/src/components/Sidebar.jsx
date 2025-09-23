@@ -15,11 +15,11 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 
 const navItems = [
   { label: "Home", to: "/", icon: <HomeIcon /> },
-  { label: "Asientos", to: "/Asientos", icon: <PlaylistAddCheckIcon /> },
-  { label: "Catálogo de Cuentas", to: "/Catalogo", icon: <AccountTreeIcon /> },
-  { label: "Consultas", to: "/Consultas", icon: <SearchIcon /> },
-  { label: "Libro Diario", to: "/LibroDiario", icon: <MenuBookIcon /> },
-  { label: "Libro Mayor", to: "/LibroMayor", icon: <ImportContactsIcon /> },
+  { label: "ASIENTOS", to: "/Asientos", icon: <PlaylistAddCheckIcon /> },
+  { label: "CATÁLOGO DE CUENTAS", to: "/Catalogo", icon: <AccountTreeIcon /> },
+  { label: "CONSULTAS", to: "/Consultas", icon: <SearchIcon /> },
+  { label: "LIBRO DIARIO", to: "/LibroDiario", icon: <MenuBookIcon /> },
+  { label: "LIBRO MAYOR", to: "/LibroMayor", icon: <ImportContactsIcon /> },
 ];
 
 export default function Sidebar({
@@ -68,7 +68,7 @@ export default function Sidebar({
               <IconButton
                 size="small"
                 onClick={onClose}
-                sx={{  color: "#0B1220", "&:hover": { bgcolor: "#F1F5F9"} }}
+                sx={{  color: "#0B1220", "&:hover": { bgcolor: "#ffffffff"} }}
                 aria-label="Cerrar sidebar"
               >
                 
@@ -107,7 +107,8 @@ export default function Sidebar({
                   borderRadius: 2,
                   gap: open ? 1 : 0,
                   "&.active": {
-                    bgcolor: "#ffffff",
+                    color: "#ffffff",
+                    bgcolor: "#313659ff",
                   },
                   "&:hover": {
                     bgcolor: "#F1F5F",
