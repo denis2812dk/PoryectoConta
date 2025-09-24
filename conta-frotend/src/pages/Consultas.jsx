@@ -150,9 +150,6 @@ export default function Consultas() {
                     <th className="py-3 px-3 font-semibold">ID</th>
                     <th className="py-3 px-3 font-semibold">Descripción</th>
                     <th className="py-3 px-3 font-semibold">Detalle</th>
-                    <th className="py-3 px-3 font-semibold text-center">
-                      Acciones
-                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -207,15 +204,6 @@ export default function Consultas() {
                             ) : (
                               <span className="text-slate-500">(detalle oculto)</span>
                             )}
-                          </td>
-                          <td className="py-2.5 px-3 border-t align-top text-center">
-                            <button
-                              type="button"
-                              className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700"
-                              onClick={() => toggleRow(a.id)}
-                            >
-                              {isOpen ? "Ocultar" : "Ver detalle"}
-                            </button>
                           </td>
                         </tr>
                       );
