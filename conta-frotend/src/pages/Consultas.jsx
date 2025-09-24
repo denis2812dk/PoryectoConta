@@ -127,12 +127,12 @@ export default function Consultas() {
 
               <div className="flex gap-2 text-sm">
                 <button
-                  className="inline-flex items-center justify-center h-10 px-4 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold shadow-sm ring-1 ring-green-600/10"
+                  className="inline-flex items-center justify-center h-10 px-4 rounded-lg bg-green-600 hover:bg-green-700 text-slate-700 font-semibold shadow-sm ring-1 ring-green-600/10"
                 >
                   Buscar
                 </button>
                 <button
-                  className="inline-flex items-center justify-center h-10 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-sm ring-1 ring-blue-600/10"
+                  className="inline-flex items-center justify-center h-10 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-slate-700 font-semibold shadow-sm ring-1 ring-blue-600/10"
                 >
                   Refrescar
                 </button>

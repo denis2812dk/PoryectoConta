@@ -157,13 +157,13 @@ export default function LibroDiario() {
                 </button>
                 <button
                   onClick={expandAll}
-                  className="inline-flex items-center justify-center h-10 px-3 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700"
+                  className="inline-flex items-center justify-center h-10 px-3 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700  ring-green-600/10"
                 >
                   Expandir
                 </button>
                 <button
                   onClick={collapseAll}
-                  className="inline-flex items-center justify-center h-10 px-3 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700"
+                  className="inline-flex items-center justify-center h-10 px-3 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700  ring-green-600/10"
                 >
                   Colapsar
                 </button>

@@ -57,7 +57,7 @@ function MayorFilters({ values, onChange, onSubmit, onClear, loading }) {
         <button
           type="submit"
           disabled={loading}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-blue-700 disabled:opacity-50"
         >
           {loading ? "Cargando…" : "Aplicar"}
         </button>

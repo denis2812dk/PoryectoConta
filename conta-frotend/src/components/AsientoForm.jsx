@@ -224,7 +224,7 @@ export default function AsientoForm({ onSaved }) {
               <button
                 type="button"
                 onClick={addRow}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-black"
               >
                 + Agregar partida
               </button>
@@ -247,7 +247,7 @@ export default function AsientoForm({ onSaved }) {
 
       <div className="flex items-center gap-3">
         <button
-          className="bg-black hover:bg-gray-900 text-white px-5 py-2.5 rounded-lg disabled:opacity-50"
+          className="bg-black hover:bg-gray-900 text-black px-5 py-2.5 rounded-lg disabled:opacity-50"
           disabled={saving || !balanced || tieneErrores}
         >
           {saving ? "Guardando…" : "Guardar asiento"}
