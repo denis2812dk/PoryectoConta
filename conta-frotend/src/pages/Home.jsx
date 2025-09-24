@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "../multimedia/logo.png";
+import img1 from "../multimedia/img1.png";
 import { api } from "../app/api";
 
 // formateo rápido de número a dinero (sin locales fijos)
@@ -148,9 +149,7 @@ export default function Home() {
               </div>
 
               <div className="hidden items-center justify-center bg-slate-100 p-8 md:flex">
-                <div className="flex h-64 w-full items-center justify-center rounded-lg bg-slate-200">
-                  <p className="text-slate-500">{loading ? "Cargando…" : ""}</p>
-                </div>
+                <img src={img1} alt="Logo" className="h-60 w-100" />
               </div>
             </div>
           </section>
