@@ -292,6 +292,29 @@ export default function Home() {
               )}
             </div>
           </section>
+
+          <section className="w-full rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 className="text-lg font-bold text-slate-900 mb-4">
+              Desarrollado por:
+            </h3>
+            <ul className="space-y-2 text-slate-700">
+              <li>
+                <span className="font-semibold">BALCACERES SILVESTRE, LUIS FELIPE</span> — Ingeniería en Desarrollo de Software, Tercer año
+              </li>
+              <li>
+                <span className="font-semibold">CHÁVEZ SOLITO, RENÉ DAVID</span> — Ingeniería en Desarrollo de Software, Tercer año
+              </li>
+              <li>
+                <span className="font-semibold">CRUZ ALGARIN, KATHERINNE JEANNETTE</span> — Ingeniería en Desarrollo de Software, Tercer año
+              </li>
+              <li>
+                <span className="font-semibold">GUEVARA MARTINEZ, DENNIS ADEMIR</span> — Ingeniería en Desarrollo de Software, Tercer año
+              </li>
+              <li>
+                <span className="font-semibold">VILLEDA ALABI, MARIO EDGARDO</span> — Ingeniería en Desarrollo de Software, Tercer año
+              </li>
+            </ul>
+          </section>
         </div>
       </main>
 
