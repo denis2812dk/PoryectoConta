@@ -149,24 +149,30 @@ export default function LibroDiario() {
               </div>
 
               <div className="flex gap-2 text-sm">
+              <div className="flex gap-2 text-sm">
                 <button
                   onClick={cargar}
-                  className="inline-flex items-center justify-center h-10 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-black font-semibold shadow-sm ring-1 ring-blue-600/10"
+                  className="inline-flex items-center justify-center h-10 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-sm ring-1 ring-blue-600/10"
                 >
                   Refrescar
                 </button>
+
                 <button
                   onClick={expandAll}
-                  className="inline-flex items-center justify-center h-10 px-3 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700  ring-green-600/10"
+                  className="inline-flex items-center justify-center h-10 px-3 rounded-lg bg-green-500 hover:bg-green-600 text-white font-semibold shadow-sm ring-1 ring-green-300/20"
                 >
                   Expandir
                 </button>
+
                 <button
                   onClick={collapseAll}
-                  className="inline-flex items-center justify-center h-10 px-3 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700  ring-green-600/10"
+                  className="inline-flex items-center justify-center h-10 px-3 rounded-lg bg-black hover:bg-gray-900 text-white font-semibold shadow-sm ring-1 ring-gray-700/20"
                 >
                   Colapsar
                 </button>
+
+             
+            </div>
               </div>
             </div>
           </section>

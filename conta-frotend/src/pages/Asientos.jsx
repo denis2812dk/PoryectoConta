@@ -10,7 +10,7 @@ export default function Asientos() {
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur">
         <div className="w-full flex h-16 items-center justify-between px-4">
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 ml-20">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 ml-20">
             Asientos contables
           </h1>
         </div>

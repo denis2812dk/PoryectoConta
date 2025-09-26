@@ -144,7 +144,7 @@ export default function CatalogoCuentas() {
         <div className="min-h-screen w-full overflow-x-hidden pr-4 sm:pr-6 bg-slate-50 text-slate-800 flex flex-col ">
             <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur">
                 <div className="w-full flex h-16 items-center justify-between px-4">
-                    <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 ml-20">Catálogo de cuentas</h1>
+                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 ml-20">Catálogo de cuentas</h1>
                 </div>
             </header>
 
@@ -167,7 +167,7 @@ export default function CatalogoCuentas() {
                         </section>
                     )}
 
-                    {/* Encabezado de la página */}
+                    
                     <section className="rounded-xl border border-slate-200 bg-white shadow-sm">
                         <div className="px-4 pt-6 pb-4 flex flex-col gap-2 md:flex-row md:items-baseline md:justify-between">
                             <div>
@@ -231,15 +231,16 @@ export default function CatalogoCuentas() {
                                         <div className="flex items-center gap-2 pt-2 flex-wrap">
                                             <button
                                                 type="submit"
-                                                className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-black font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shadow-sm ring-1 ring-blue-600/10"
+                                                className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shadow-sm ring-1 ring-blue-600/10"
                                                 disabled={loading}
-                                            >
+                                                >
                                                 {loading ? "Guardando…" : "Agregar"}
                                             </button>
+                                            
                                             <button
                                                 type="button"
                                                 onClick={clearForm}
-                                                className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-black font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shadow-sm ring-1 ring-blue-600/10"
+                                                className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shadow-sm ring-1 ring-blue-600/10"
                                             >
                                                 Limpiar
                                             </button>

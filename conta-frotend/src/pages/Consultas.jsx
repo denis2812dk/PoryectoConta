@@ -15,7 +15,7 @@ export default function Consultas() {
   const [dateFromInput, setDateFromInput] = useState("");
   const [dateToInput, setDateToInput] = useState("");
 
-  // Expandir filas
+  
   const [expanded, setExpanded] = useState(() => new Set());
 
   const cargar = async () => {
@@ -23,7 +23,7 @@ export default function Consultas() {
       setLoading(true);
       const data = await api.getAsientos();
       setAsientos(Array.isArray(data) ? data : []);
-      // mantener estado de expandido
+      
       setExpanded((prev) => {
         const copy = new Set();
         for (const a of data) if (prev.has(a.id)) copy.add(a.id);
@@ -38,7 +38,8 @@ export default function Consultas() {
     cargar();
   }, []);
 
-  // Helpers
+
+
   const parseISO = (s) => {
     const d = new Date(s);
     return isNaN(d.getTime()) ? null : d;
@@ -62,7 +63,8 @@ export default function Consultas() {
     });
   }, [asientos, q, dateFrom, dateTo]);
 
-  // Toggle fila
+
+
   const toggleRow = (id) =>
     setExpanded((prev) => {
       const copy = new Set(prev);
@@ -73,25 +75,24 @@ export default function Consultas() {
 
   return (
     <div className="min-h-screen w-full bg-slate-50 text-slate-800 flex flex-col">
-      {/* Header */}
       <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur">
         <div className="w-full flex h-16 items-center justify-between px-4">
           <h1 className="text-3xl md:text-4xl font-bold  tracking-tight text-slate-900 ml-20">
-            Consultas de Transacciones
+            Consultas
           </h1>
         </div>
       </header>
 
       <main className="flex-1 pt-6 md:pt-8 px-2 sm:px-6 lg:px-8 w-full">
         <div className="w-full flex flex-col gap-6 min-h-full items-stretch justify-start py-4 md:py-12">
-          {/* Sección Buscar y organizar */}
+
           <section className="rounded-2xl border border-slate-200 bg-white shadow-sm px-6 py-6">
             <h3 className="font-semibold text-slate-800 mb-3">
-              Buscar por descripción o fecha
+              Buscar transacciones por descripción o fecha
             </h3>
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 w-full text-sm">
-                {/* Buscar por descripción */}
+
                 <div className="relative">
                   <input
                     value={qInput}
@@ -104,7 +105,7 @@ export default function Consultas() {
                   </span>
                 </div>
 
-                {/* Fecha desde */}
+
                 <input
                   type="date"
                   value={dateFromInput}
@@ -114,7 +115,8 @@ export default function Consultas() {
                   aria-label="Desde"
                 />
 
-                {/* Fecha hasta */}
+
+
                 <input
                   type="date"
                   value={dateToInput}
@@ -127,12 +129,12 @@ export default function Consultas() {
 
               <div className="flex gap-2 text-sm">
                 <button
-                  className="inline-flex items-center justify-center h-10 px-4 rounded-lg bg-green-600 hover:bg-green-700 text-slate-700 font-semibold shadow-sm ring-1 ring-green-600/10"
+                  className="inline-flex items-center justify-center h-10 px-4 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold shadow-sm ring-1 ring-green-600/10"
                 >
                   Buscar
                 </button>
                 <button
-                  className="inline-flex items-center justify-center h-10 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-slate-700 font-semibold shadow-sm ring-1 ring-blue-600/10"
+                  className="inline-flex items-center justify-center h-10 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-sm ring-1 ring-blue-600/10"
                 >
                   Refrescar
                 </button>
@@ -140,7 +142,7 @@ export default function Consultas() {
             </div>
           </section>
 
-          {/* Tabla expandible */}
+
           <section className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-md">
             <div className="overflow-x-auto max-h-[70vh]">
               <table className="min-w-full text-sm">
