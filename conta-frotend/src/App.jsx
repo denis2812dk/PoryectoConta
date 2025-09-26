@@ -26,7 +26,6 @@ export default function App() {
   React.useEffect(() => { setOpen(!isMobile); }, [isMobile]);
   const toggle = () => setOpen(v => !v);
 
-  // On Home, force sidebar open and persistent, and disable toggle button
   const sidebarOpen = isHome ? true : open;
   const sidebarVariant = isHome ? "permanent" : (isMobile ? "temporary" : "permanent");
   const showToggleButton = !isHome;
