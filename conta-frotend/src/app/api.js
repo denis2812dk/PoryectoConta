@@ -14,11 +14,27 @@ async function http(path, opts = {}) {
   return res.json();
 }
 
+async function httpVoid(path, opts = {}) {
+  const res = await fetch(`${BASE}${path}`, {
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    ...opts,
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || res.statusText);
+  }
+}
+
+
 export const api = {
   getCuentas: () => http("/cuentas"),
   crearCuenta: (cuenta) => http("/cuentas", { method: "POST", body: JSON.stringify(cuenta) }),
   getAsientos: () => http("/asientos"),
   crearAsiento: (req) => http("/asientos", { method: "POST", body: JSON.stringify(req) }),
+  eliminarCuenta: (id) => httpVoid(`/cuentas/${id}`, { method: "DELETE" }),
+  inactivarCuenta: (id) => httpVoid(`/cuentas/${id}/inactivar`, { method: "PATCH" }),
+reactivarCuenta: (id) => httpVoid(`/cuentas/${id}/reactivar`, { method: "PATCH" }),
 
   // NUEVO: mayorización y asientos recientes
   getMayor: (params) => {
