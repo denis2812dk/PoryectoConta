@@ -16,14 +16,14 @@ export default function CatalogoCuentas() {
   // Toolbar
   const [q, setQ] = useState("");
   const [filtroTipo, setFiltroTipo] = useState("Todos");
-  const [filtroEstado, setFiltroEstado] = useState("Todas"); // NUEVO: filtro por estado
+  const [filtroEstado, setFiltroEstado] = useState("Todas"); // filtro por estado
   const [sort, setSort] = useState({ key: "id", asc: true });
 
   // Paginación
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  const tipos = ["Activo", "Pasivo", "Patrimonio", "Ingreso", "Costo", "Gasto"]; // orden lógico
+  const tipos = ["Activo", "Pasivo", "Patrimonio", "Ingreso", "Costo", "Gasto"]; // orden lógico UI
 
   const tipoStyles = {
     Activo: {
@@ -58,11 +58,27 @@ export default function CatalogoCuentas() {
     },
   };
 
+  // Normaliza tipo → tipoUI según primer dígito del código
+  const mapTipoUI = (id) => {
+    const p = String(id ?? "")[0];
+    return p === "1" ? "Activo"
+      : p === "2" ? "Pasivo"
+      : p === "3" ? "Patrimonio"
+      : p === "4" ? "Gasto"      // 4 en UI = Gasto
+      : p === "5" ? "Ingreso"    // 5 en UI = Ingreso
+      : p === "6" ? "Costo"      // 6 en UI = Costo
+      : "Otro";
+  };
+
   const cargar = async () => {
     try {
       setLoading(true);
       const data = await api.getCuentas();
-      setCuentas(Array.isArray(data) ? data : []);
+      const norm = (Array.isArray(data) ? data : []).map((c) => ({
+        ...c,
+        tipoUI: mapTipoUI(c.id),
+      }));
+      setCuentas(norm);
     } catch (e) {
       setAlert({ type: "error", msg: e.message || "No se pudieron cargar las cuentas." });
     } finally {
@@ -74,26 +90,10 @@ export default function CatalogoCuentas() {
     cargar();
   }, []);
 
-  // reglas por prefijo de código → sugiere tipo
+  // reglas por prefijo de código → sugiere tipo (usamos convención UI)
   const sugerirTipoPorCodigo = (idStr) => {
     if (!idStr) return null;
-    const p = String(idStr)[0];
-    switch (p) {
-      case "1":
-        return "Activo";
-      case "2":
-        return "Pasivo";
-      case "3":
-        return "Patrimonio";
-      case "4":
-        return "Ingreso";
-      case "5":
-        return "Gasto"; // 5 = Gastos, 6 = Costos en muchos catálogos
-      case "6":
-        return "Costo";
-      default:
-        return null;
-    }
+    return mapTipoUI(idStr);
   };
 
   const validate = () => {
@@ -124,7 +124,7 @@ export default function CatalogoCuentas() {
       await api.crearCuenta({
         id: String(form.id).trim(),
         nombre: form.nombre.trim(),
-        tipo: form.tipo,
+        tipo: form.tipo, // puedes ignorarlo en backend si prefieres derivarlo
       });
       setForm({ id: "", nombre: "", tipo: "Activo" });
       setAlert({ type: "success", msg: "Cuenta agregada correctamente." });
@@ -137,7 +137,7 @@ export default function CatalogoCuentas() {
   };
 
   const startEdit = (c) => {
-    setForm({ id: String(c.id), nombre: c.nombre, tipo: c.tipo });
+    setForm({ id: String(c.id), nombre: c.nombre, tipo: c.tipoUI }); // mostramos tipo UI al editar
     setErrors({});
     setEditingId(String(c.id));
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -155,7 +155,7 @@ export default function CatalogoCuentas() {
       setLoading(true);
       await api.actualizarCuenta(String(editingId), {
         nombre: form.nombre.trim(),
-        tipo: form.tipo,
+        tipo: form.tipo, // opcional que backend lo use
       });
       setAlert({ type: "success", msg: "Cuenta actualizada." });
       cancelarEdicion();
@@ -179,7 +179,6 @@ export default function CatalogoCuentas() {
       setConfirmDel({ open: false, id: null, nombre: "" }); // cerrar modal en éxito
     } catch (err) {
       const msg = err.message || "";
-      // Si viene del backend que tiene movimientos, ofrece inactivar
       if (msg.toLowerCase().includes("tiene movimientos")) {
         setAlert({
           type: "error",
@@ -214,7 +213,7 @@ export default function CatalogoCuentas() {
   const cuentasFiltradas = useMemo(() => {
     const qlower = q.trim().toLowerCase();
     let arr = cuentas.filter((c) => {
-      const pasaTipo = filtroTipo === "Todos" || c.tipo === filtroTipo;
+      const pasaTipo = filtroTipo === "Todos" || c.tipoUI === filtroTipo; // ← tipoUI
       const pasaEstado =
         filtroEstado === "Todas" ||
         (filtroEstado === "Activas" && c.activo !== false) ||
@@ -228,8 +227,10 @@ export default function CatalogoCuentas() {
 
     const { key, asc } = sort;
     arr.sort((a, b) => {
-      const va = String(a[key] ?? "").toLowerCase();
-      const vb = String(b[key] ?? "").toLowerCase();
+      // si ordenas por "tipo", usar tipoUI
+      const kk = key === "tipo" ? "tipoUI" : key;
+      const va = String(a[kk] ?? "").toLowerCase();
+      const vb = String(b[kk] ?? "").toLowerCase();
       if (va < vb) return asc ? -1 : 1;
       if (va > vb) return asc ? 1 : -1;
       return 0;
@@ -263,19 +264,21 @@ export default function CatalogoCuentas() {
 
   const countsPorTipo = useMemo(() => {
     const base = Object.fromEntries(tipos.map((t) => [t, 0]));
-    for (const c of cuentas) base[c.tipo] = (base[c.tipo] || 0) + 1;
+    for (const c of cuentas) base[c.tipoUI] = (base[c.tipoUI] || 0) + 1; // ← tipoUI
     return base;
   }, [cuentas]);
 
   // Exportar CSV del catálogo filtrado
   const exportarCSV = () => {
     const encabezados = ["codigo", "nombre", "tipo", "estado"];
-    const filasCSV = cuentasFiltradas.map((c) => [
-      c.id,
-      `"${String(c.nombre).replaceAll('"', '""')}"`,
-      c.tipo,
-      c.activo !== false ? "Activa" : "Inactiva",
-    ].join(","));
+    const filasCSV = cuentasFiltradas.map((c) =>
+      [
+        c.id,
+        `"${String(c.nombre).replaceAll('"', '""')}"`,
+        c.tipoUI, // exporta tipo normalizado
+        c.activo !== false ? "Activa" : "Inactiva",
+      ].join(",")
+    );
     const csv = [encabezados.join(","), ...filasCSV].join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -366,11 +369,9 @@ export default function CatalogoCuentas() {
                         }}
                         disabled={Boolean(editingId)}
                       />
-                      {errors.id && (
-                        <p className="text-red-600 text-xs mt-1">{errors.id}</p>
-                      )}
+                      {errors.id && <p className="text-red-600 text-xs mt-1">{errors.id}</p>}
                       <p className="text-slate-400 text-xs mt-1">
-                        Solo números (ej. 1xxx Activo, 2xxx Pasivo, 3xxx Patrimonio, 4xxx Ingreso, 5xxx Gasto, 6xxx Costo).
+                        Solo números (ej. 1xxx Activo, 2xxx Pasivo, 3xxx Patrimonio, 4xxx Gasto, 5xxx Ingreso, 6xxx Costo).
                       </p>
                     </div>
 
@@ -384,9 +385,7 @@ export default function CatalogoCuentas() {
                         value={form.nombre}
                         onChange={(e) => setForm({ ...form, nombre: e.target.value })}
                       />
-                      {errors.nombre && (
-                        <p className="text-red-600 text-xs mt-1">{errors.nombre}</p>
-                      )}
+                      {errors.nombre && <p className="text-red-600 text-xs mt-1">{errors.nombre}</p>}
                     </div>
 
                     <div>
@@ -404,15 +403,13 @@ export default function CatalogoCuentas() {
                           </option>
                         ))}
                       </select>
-                      {errors.tipo && (
-                        <p className="text-red-600 text-xs mt-1">{errors.tipo}</p>
-                      )}
+                      {errors.tipo && <p className="text-red-600 text-xs mt-1">{errors.tipo}</p>}
                     </div>
 
                     <div className="flex items-center gap-2 pt-2 flex-wrap">
                       <button
                         type="submit"
-                        className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shadow-sm"
+                        className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700  text-slate-800 font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shadow-sm"
                         disabled={loading}
                       >
                         {loading ? "Guardando…" : editingId ? "Actualizar" : "Agregar"}
@@ -465,7 +462,7 @@ export default function CatalogoCuentas() {
                         ))}
                       </select>
 
-                      {/* NUEVO: filtro por estado */}
+                      {/* filtro por estado */}
                       <select
                         value={filtroEstado}
                         onChange={(e) => setFiltroEstado(e.target.value)}
@@ -559,7 +556,7 @@ export default function CatalogoCuentas() {
                           >
                             Tipo {sort.key === "tipo" ? (sort.asc ? "↑" : "↓") : ""}
                           </th>
-                          {/* NUEVO: Estado */}
+                          {/* Estado */}
                           <th className="py-3 px-3 font-semibold">Estado</th>
                           <th className="py-3 px-3 font-semibold text-right">Acciones</th>
                         </tr>
@@ -591,13 +588,13 @@ export default function CatalogoCuentas() {
                               <td className="py-2.5 px-3 border-t align-top">
                                 <span
                                   className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
-                                    tipoStyles[c.tipo]?.chip || "bg-white border-slate-200 text-slate-700"
+                                    tipoStyles[c.tipoUI]?.chip || "bg-white border-slate-200 text-slate-700"
                                   }`}
                                 >
-                                  {c.tipo}
+                                  {c.tipoUI}
                                 </span>
                               </td>
-                              {/* NUEVO: Estado */}
+                              {/* Estado */}
                               <td className="py-2.5 px-3 border-t align-top">
                                 <span
                                   className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${

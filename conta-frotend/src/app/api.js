@@ -34,7 +34,9 @@ export const api = {
   crearAsiento: (req) => http("/asientos", { method: "POST", body: JSON.stringify(req) }),
   eliminarCuenta: (id) => httpVoid(`/cuentas/${id}`, { method: "DELETE" }),
   inactivarCuenta: (id) => httpVoid(`/cuentas/${id}/inactivar`, { method: "PATCH" }),
-reactivarCuenta: (id) => httpVoid(`/cuentas/${id}/reactivar`, { method: "PATCH" }),
+  reactivarCuenta: (id) => httpVoid(`/cuentas/${id}/reactivar`, { method: "PATCH" }),
+  actualizarCuenta: (id, body) =>
+    http(`/cuentas/${id}`, { method: "PUT", body: JSON.stringify(body) }),
 
   // NUEVO: mayorización y asientos recientes
   getMayor: (params) => {
