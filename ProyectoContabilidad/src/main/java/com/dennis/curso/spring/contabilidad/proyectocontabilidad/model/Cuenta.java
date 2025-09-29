@@ -22,6 +22,9 @@ public class Cuenta {
     @Column(nullable = false)
     private String tipo;
 
+    @Column(nullable = false)
+    private Boolean activo = true;
+
     public String getId() {
         return id;
     }
@@ -44,5 +47,13 @@ public class Cuenta {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 }
