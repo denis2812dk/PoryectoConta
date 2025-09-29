@@ -11,23 +11,26 @@ import java.util.List;
 @Entity
 @Table(name = "asientos")
 public class Asiento {
-
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
 
     private LocalDate fecha;
 
-    @NotBlank
-    @Column(nullable = false)
+    @Column(length = 500)
     private String descripcion;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "asiento_id")
-    @Size(min = 2)
+    @OneToMany(
+            mappedBy = "asiento",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<Partida> partidas = new ArrayList<>();
+
+    // helper opcional
+    public void addPartida(Partida p) {
+        p.setAsiento(this);
+        this.partidas.add(p);
+    }
 
     public Long getId() {
         return id;

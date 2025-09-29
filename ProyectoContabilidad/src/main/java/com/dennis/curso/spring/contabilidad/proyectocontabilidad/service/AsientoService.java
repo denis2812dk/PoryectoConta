@@ -7,7 +7,6 @@ import com.dennis.curso.spring.contabilidad.proyectocontabilidad.model.Cuenta;
 import java.util.List;
 
 public interface AsientoService {
-
+    Asiento crear(AsientoRequest req);
     List<Asiento> findAll();
-    Asiento save(AsientoRequest re);
 }

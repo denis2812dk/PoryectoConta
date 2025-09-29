@@ -23,17 +23,20 @@ export default function Consultas() {
       setLoading(true);
       const data = await api.getAsientos();
       setAsientos(Array.isArray(data) ? data : []);
-      
-      setExpanded((prev) => {
+      setExpanded(prev => {
         const copy = new Set();
-        for (const a of data) if (prev.has(a.id)) copy.add(a.id);
+        for (const a of (Array.isArray(data) ? data : [])) if (prev.has(a.id)) copy.add(a.id);
         return copy;
       });
+    } catch (err) {
+      console.error("No se pudo cargar asientos:", err);
+      setAsientos([]);
+      // opcional UX:
+      // toast.error(err.message || "No se pudo cargar asientos");
     } finally {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     cargar();
   }, []);

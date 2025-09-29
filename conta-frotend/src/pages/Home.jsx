@@ -19,10 +19,10 @@ export default function Home() {
     saldoCaja: 0,
   });
   const [recent, setRecent] = useState([]);
-  const [loading, setLoading] = useState(false); // por si luego quieres un skeleton
+  const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
 
-  // Helper medio improvisado para el rango del mes actual
+  // Rango del mes actual
   const getMonthRange = () => {
     const today = new Date();
     const y = today.getFullYear();
@@ -37,50 +37,49 @@ export default function Home() {
       setLoading(true);
       setErr("");
       try {
-        // 1) KPIs desde /mayor
+        // ---- 1) KPIs desde /mayor ----
         const { d1, d2 } = getMonthRange();
         const mayor = await api.getMayor({ desde: d1, hasta: d2 }); // objeto por cuenta
-        // Nota: si no viene el "tipo" en la respuesta, usamos prefijos (4 ingreso, 5 costo, 6 gasto)
-        let ingresos = 0,
-          gastos = 0,
-          costos = 0,
-          saldoCaja = 0;
+
+        let ingresos = 0;
+        let gastos = 0;      // gastos + costos (4xxx)
+        let saldoCaja = 0;   // efectivo y equivalentes (1101xx)
 
         for (const key of Object.keys(mayor || {})) {
           const c = mayor[key] || {};
-          const id = String(c.cuentaId || key || "");
+          const id = String(c.cuentaId ?? key ?? "");
           const pref = id.charAt(0);
-          const debe = Number(c.debe || 0);
-          const haber = Number(c.haber || 0);
-          const saldo = Number(c.saldo || 0);
 
-          if (pref === "4") {
-            // ingresos suelen aumentar en HABER
+          const debe  = Number(c.debe  ?? 0);
+          const haber = Number(c.haber ?? 0);
+
+          // Catálogo usado:
+          // 4xxx = Gastos/Costos → aumentan en DEBE
+          // 5xxx = Ingresos      → aumentan en HABER
+          // 6xxx = Cierre        → ignorar para KPIs
+          if (pref === "5") {
             ingresos += (haber - debe);
-          } else if (pref === "5") {
-            // costos suelen aumentar en DEBE
-            costos += (debe - haber);
-          } else if (pref === "6") {
-            // gastos suelen aumentar en DEBE
+          } else if (pref === "4") {
             gastos += (debe - haber);
           }
 
-          if (id === "1101") {
-            // Caja
-            saldoCaja = saldo;
+          // Caja y equivalentes: 1101 y subcuentas (110101.., 110102.., etc.)
+          if (id.startsWith("1101")) {
+            // usa saldo si viene; si no, calcula como activo (debe - haber)
+            const saldo = Number(c.saldo ?? (debe - haber));
+            saldoCaja += saldo;
           }
         }
 
-        const utilidad = ingresos - (gastos + costos);
+        // evita negativos por periodos incompletos
+        ingresos = Math.max(0, ingresos);
+        gastos   = Math.max(0, gastos);
 
-        setKpis({
-          ingresos: Math.max(0, ingresos),
-          gastos: Math.max(0, gastos + costos),
-          utilidad,
-          saldoCaja,
-        });
+        const utilidad = ingresos - gastos;
 
-        // 2) Movimientos recientes desde /asientos (ordenamos desc y aplanamos partidas)
+        setKpis({ ingresos, gastos, utilidad, saldoCaja });
+
+        // ---- 2) Movimientos recientes desde /asientos ----
         const asientos = await api.getAsientos();
         const parseDate = (s) => new Date(s).getTime() || 0;
         const ultimos = (Array.isArray(asientos) ? asientos : [])
@@ -100,7 +99,6 @@ export default function Home() {
       } catch (e) {
         console.warn("Error en Home:", e);
         setErr("No se pudieron cargar los datos del panel.");
-        // no tiro el error para que por lo menos se vea el resto del layout
       } finally {
         setLoading(false);
       }
@@ -168,7 +166,6 @@ export default function Home() {
                   <span className="text-2xl font-bold text-slate-900">
                     {money(kpi.value)}
                   </span>
-                  {/* Badge fake, lo dejamos vacío para que quede “medio hecho” */}
                 </div>
               </div>
             ))}
@@ -236,7 +233,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="mt-4 h-24 rounded-md bg-slate-100 flex items-center justify-center text-xs text-slate-500">
-                {/* Placeholder por ahora */}
+                {/* Placeholder */}
               </div>
             </div>
 
@@ -287,9 +284,7 @@ export default function Home() {
                   )}
                 </tbody>
               </table>
-              {err && (
-                <div className="mt-3 text-xs text-rose-600">{err}</div>
-              )}
+              {err && <div className="mt-3 text-xs text-rose-600">{err}</div>}
             </div>
           </section>
 

@@ -8,16 +8,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class AsientoRequest {
-
     public static class PartidaDTO {
-
-        public String cuentaId;
+        public String cuentaId;                // viene como String desde el front
         public BigDecimal debe = BigDecimal.ZERO;
         public BigDecimal haber = BigDecimal.ZERO;
     }
-        public LocalDate fecha;
-        @NotBlank public String descripcion;
-        @Size(min = 2) public List<PartidaDTO> partidas;
+    public LocalDate fecha;
+    @NotBlank public String descripcion;
+    @Size(min = 2) public List<PartidaDTO> partidas;
 
 
 }
