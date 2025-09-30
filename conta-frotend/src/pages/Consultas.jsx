@@ -143,7 +143,7 @@ export default function Consultas() {
       {/* HEADER */}
       <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur">
         <div className="w-full flex h-16 items-center justify-between px-4">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 ml-20">
+          <h1 className="text-2xl uppercase font-bold text-slate-900">
             Consultas
           </h1>
         </div>
@@ -196,13 +196,13 @@ export default function Consultas() {
                 <div className="flex gap-2 text-sm">
                   <button
                     onClick={aplicarBusqueda}
-                    className="inline-flex items-center justify-center h-10 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm ring-1 ring-emerald-600/10"
+                    className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700  text-slate-800 font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shadow-sm"
                   >
                     Buscar
                   </button>
                   <button
                     onClick={refrescar}
-                    className="inline-flex items-center justify-center h-10 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-sm ring-1 ring-blue-600/10"
+                    className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700  text-slate-800 font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shadow-sm"
                   >
                     Refrescar
                   </button>

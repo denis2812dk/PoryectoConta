@@ -9,8 +9,8 @@ export default function Asientos() {
     <div className="min-h-screen w-full overflow-x-hidden pr-4 sm:pr-6 bg-slate-50 text-slate-800 flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur">
-        <div className="w-full flex h-16 items-center justify-center px-4">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900">
+        <div className="w-full flex h-16 items-center justify-between px-4">
+          <h1 className="text-2xl uppercase font-bold text-slate-900">
             Asientos contables
           </h1>
         </div>

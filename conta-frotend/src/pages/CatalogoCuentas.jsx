@@ -63,11 +63,11 @@ export default function CatalogoCuentas() {
     const p = String(id ?? "")[0];
     return p === "1" ? "Activo"
       : p === "2" ? "Pasivo"
-      : p === "3" ? "Patrimonio"
-      : p === "4" ? "Gasto"      // 4 en UI = Gasto
-      : p === "5" ? "Ingreso"    // 5 en UI = Ingreso
-      : p === "6" ? "Costo"      // 6 en UI = Costo
-      : "Otro";
+        : p === "3" ? "Patrimonio"
+          : p === "4" ? "Gasto"      // 4 en UI = Gasto
+            : p === "5" ? "Ingreso"    // 5 en UI = Ingreso
+              : p === "6" ? "Costo"      // 6 en UI = Costo
+                : "Otro";
   };
 
   const cargar = async () => {
@@ -293,13 +293,13 @@ export default function CatalogoCuentas() {
     <div className="min-h-screen w-full overflow-x-hidden pr-4 sm:pr-6 bg-slate-50 text-slate-800 flex flex-col ">
       <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur">
         <div className="w-full flex h-16 items-center justify-between px-4">
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 ml-20">
+          <h1 className=" text-2xl uppercase font-bold text-slate-900">
             Catálogo de cuentas
           </h1>
           <div className="flex items-center gap-2">
             <button
               onClick={exportarCSV}
-              className="inline-flex items-center px-3 py-2 rounded-lg border hover:bg-slate-50 text-sm"
+              className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700  text-slate-800 font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shadow-sm"
             >
               Exportar CSV
             </button>
@@ -317,8 +317,8 @@ export default function CatalogoCuentas() {
                 (alert.type === "success"
                   ? "bg-green-50 border-green-200 text-green-800"
                   : alert.type === "error"
-                  ? "bg-red-50 border-red-200 text-red-800"
-                  : "bg-blue-50 border-blue-200 text-blue-800")
+                    ? "bg-red-50 border-red-200 text-red-800"
+                    : "bg-blue-50 border-blue-200 text-blue-800")
               }
               role="status"
             >
@@ -356,9 +356,8 @@ export default function CatalogoCuentas() {
                     <div>
                       <label className="block text-sm text-slate-700 mb-1">Código</label>
                       <input
-                        className={`w-full border rounded-lg p-2.5 bg-white outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.id ? "border-red-300" : "border-slate-300"
-                        }`}
+                        className={`w-full border rounded-lg p-2.5 bg-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.id ? "border-red-300" : "border-slate-300"
+                          }`}
                         placeholder="Ej. 1101"
                         inputMode="numeric"
                         value={form.id}
@@ -378,9 +377,8 @@ export default function CatalogoCuentas() {
                     <div>
                       <label className="block text-sm text-slate-700 mb-1">Nombre</label>
                       <input
-                        className={`w-full border rounded-lg p-2.5 bg-white outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.nombre ? "border-red-300" : "border-slate-300"
-                        }`}
+                        className={`w-full border rounded-lg p-2.5 bg-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.nombre ? "border-red-300" : "border-slate-300"
+                          }`}
                         placeholder="Caja, Bancos, Proveedores…"
                         value={form.nombre}
                         onChange={(e) => setForm({ ...form, nombre: e.target.value })}
@@ -391,9 +389,8 @@ export default function CatalogoCuentas() {
                     <div>
                       <label className="block text-sm text-slate-700 mb-1">Tipo</label>
                       <select
-                        className={`w-full border rounded-lg p-2.5 bg-white outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.tipo ? "border-red-300" : "border-slate-300"
-                        }`}
+                        className={`w-full border rounded-lg p-2.5 bg-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.tipo ? "border-red-300" : "border-slate-300"
+                          }`}
                         value={form.tipo}
                         onChange={(e) => setForm({ ...form, tipo: e.target.value })}
                       >
@@ -418,7 +415,7 @@ export default function CatalogoCuentas() {
                         <button
                           type="button"
                           onClick={cancelarEdicion}
-                          className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold text-sm w-full sm:w-auto"
+                          className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700  text-slate-800 font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shadow-sm"
                         >
                           Cancelar
                         </button>
@@ -426,7 +423,7 @@ export default function CatalogoCuentas() {
                         <button
                           type="button"
                           onClick={clearForm}
-                          className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold text-sm w-full sm:w-auto"
+                          className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700  text-slate-800 font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shadow-sm"
                         >
                           Limpiar
                         </button>
@@ -587,9 +584,8 @@ export default function CatalogoCuentas() {
                               <td className="py-2.5 px-3 border-t align-top">{c.nombre}</td>
                               <td className="py-2.5 px-3 border-t align-top">
                                 <span
-                                  className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
-                                    tipoStyles[c.tipoUI]?.chip || "bg-white border-slate-200 text-slate-700"
-                                  }`}
+                                  className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${tipoStyles[c.tipoUI]?.chip || "bg-white border-slate-200 text-slate-700"
+                                    }`}
                                 >
                                   {c.tipoUI}
                                 </span>
@@ -597,11 +593,10 @@ export default function CatalogoCuentas() {
                               {/* Estado */}
                               <td className="py-2.5 px-3 border-t align-top">
                                 <span
-                                  className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
-                                    c.activo !== false
+                                  className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${c.activo !== false
                                       ? "bg-green-50 text-green-700 border-green-200"
                                       : "bg-slate-100 text-slate-600 border-slate-200"
-                                  }`}
+                                    }`}
                                 >
                                   {c.activo !== false ? "Activa" : "Inactiva"}
                                 </span>
@@ -695,13 +690,13 @@ export default function CatalogoCuentas() {
               <div className="flex justify-end gap-2">
                 <button
                   onClick={() => setConfirmDel({ open: false, id: null, nombre: "" })}
-                  className="px-4 py-2 rounded-md border hover:bg-slate-50"
+                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700  text-slate-800 font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shadow-sm"
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={eliminar}
-                  className="px-4 py-2 rounded-md bg-rose-600 hover:bg-rose-700 text-white"
+                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700  text-slate-800 font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shadow-sm"
                   disabled={loading}
                 >
                   {loading ? "Eliminando…" : "Eliminar"}

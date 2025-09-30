@@ -265,11 +265,7 @@ export default function Home() {  //Componente principal(Inicio del sistema)
                       </td>
                     </tr>
                   ) : (
-                    /*
-                      Mostramos cada línea de partida:
-                      - La “Cuenta” ayuda a identificar qué se está afectando (Caja, Ventas, Servicios, etc.).
-                      - Debe/Haber muestran hacia qué lado fue el movimiento (por el método de partida doble).
-                    */
+                    
                     recent.map((m, i) => (
                       <tr key={i} className="text-slate-700">
                         <td className="py-2 pr-4">{m.fecha || ""}</td>
@@ -286,12 +282,12 @@ export default function Home() {  //Componente principal(Inicio del sistema)
                   )}
                 </tbody>
               </table>
-              {/* Si hubo un error al cargar, lo mostramos en chiquito para no asustar al usuario */}
+
               {err && <div className="mt-3 text-xs text-rose-600">{err}</div>}
             </div>
           </section>
 
-          {/* Créditos del equipo desarrollador: útil para proyectos académicos y transparencia */}
+          {/* integrantes*/}
           <section className="w-full rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <h3 className="text-lg font-bold text-slate-900 mb-4">
               Desarrollado por:
@@ -317,7 +313,7 @@ export default function Home() {  //Componente principal(Inicio del sistema)
         </div>
       </main>
 
-      {/* Pie de página con derechos y año dinámico */}
+      {/* pie de pagina */}
       <footer className=" bg-slate-100 text-center text-sm text-slate-500 p-4">
         &copy; {new Date().getFullYear()} Conta Pro. Todos los derechos reservados.
       </footer>
