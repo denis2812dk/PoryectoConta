@@ -4,94 +4,86 @@ import logo from "../multimedia/logo.png";
 import img1 from "../multimedia/img1.png";
 import { api } from "../app/api";
 
-// formateo rápido de número a dinero (sin locales fijos)
-const money = (n) =>
+const dinero = (n) => //formateador para mostrar montos con moneda de dolar y ajustar el numero de decimales 
   Number(n ?? 0).toLocaleString(undefined, {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 2,  //numero fracciones
   });
 
-export default function Home() {
-  const [kpis, setKpis] = useState({
-    ingresos: 0,
+
+export default function Home() {  //Componente principal(Inicio del sistema)
+ 
+  const [kpis, setKpis] = useState({//kpis del sistema para medir o anailizar el rendimiento de la empresa en base a los asientos ya agregados en la base de datos
+    ingresos: 0, 
     gastos: 0,
     utilidad: 0,
     saldoCaja: 0,
   });
-  const [recent, setRecent] = useState([]);
+  const [recent, setRecent] = useState([]); //muestra los movimientos reciente
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
 
-  // Rango del mes actual
-  const getMonthRange = () => {
-    const today = new Date();
-    const y = today.getFullYear();
-    const m = today.getMonth();
+  const getRangoMes = () => {//obtiene el primer y ultimmo del mes para calcular el rango
+    const hoy = new Date();
+    const y = hoy.getFullYear();
+    const m = hoy.getMonth();
     const d1 = new Date(y, m, 1).toISOString().slice(0, 10);
     const d2 = new Date(y, m + 1, 0).toISOString().slice(0, 10);
     return { d1, d2 };
   };
 
+  
   useEffect(() => {
     const cargar = async () => {
       setLoading(true);
       setErr("");
       try {
-        // ---- 1) KPIs desde /mayor ----
-        const { d1, d2 } = getMonthRange();
-        const mayor = await api.getMayor({ desde: d1, hasta: d2 }); // objeto por cuenta
+        const { d1, d2 } = getRangoMes(); //se aplica la funciona ya creada para obtener el prier y ultimo dia para asignar en constantes
+        const mayor = await api.getMayor({ desde: d1, hasta: d2 }); //obtiene el libro mayor desde el backend
 
-        let ingresos = 0;
-        let gastos = 0;      // gastos + costos (4xxx)
-        let saldoCaja = 0;   // efectivo y equivalentes (1101xx)
+        let ingresos = 0; // se crean los acomuladores de las kpis
+        let gastos = 0;     
+        let saldoCaja = 0;   
 
-        for (const key of Object.keys(mayor || {})) {
-          const c = mayor[key] || {};
-          const id = String(c.cuentaId ?? key ?? "");
-          const pref = id.charAt(0);
+        for (const key of Object.keys(mayor || {})) { //si mayor esta vacio se evita fallar el sistea con {}
+          const c = mayor[key] || {}; //evita que mmayor sea undefined
+          const id = String(c.cuentaId ?? key ?? ""); //se asigna el codigo de cuenta que obtuvimos del backend
+          const pref = id.charAt(0);  //se obtiene el primer digito para saber a que grupo pertenece
 
-          const debe  = Number(c.debe  ?? 0);
-          const haber = Number(c.haber ?? 0);
+          const debe  = Number(c.debe  ?? 0); //se asgina el total del debe
+          const haber = Number(c.haber ?? 0); //se asigna el total del haber
 
-          // Catálogo usado:
-          // 4xxx = Gastos/Costos → aumentan en DEBE
-          // 5xxx = Ingresos      → aumentan en HABER
-          // 6xxx = Cierre        → ignorar para KPIs
-          if (pref === "5") {
+          if (pref === "5") {  //si es una cuenta de ingreso se suma lo que crecio en el haber
             ingresos += (haber - debe);
-          } else if (pref === "4") {
+          } else if (pref === "4") { // si es una cuenta de gasto/costos se crecio en el debe
             gastos += (debe - haber);
           }
-
-          // Caja y equivalentes: 1101 y subcuentas (110101.., 110102.., etc.)
-          if (id.startsWith("1101")) {
-            // usa saldo si viene; si no, calcula como activo (debe - haber)
+        
+          if (id.startsWith("1101")) { //si la cuenta pertenece a Caja/Bancos se toma el saldo directo y se agrega al total de efectivo del panel
             const saldo = Number(c.saldo ?? (debe - haber));
             saldoCaja += saldo;
           }
         }
 
-        // evita negativos por periodos incompletos
-        ingresos = Math.max(0, ingresos);
+        ingresos = Math.max(0, ingresos); //los ingresos y gastos no quedan negativos pero se establece solo para visualización
         gastos   = Math.max(0, gastos);
 
-        const utilidad = ingresos - gastos;
+        const utilidad = ingresos - gastos; //calcula la utilidad del periodo
 
-        setKpis({ ingresos, gastos, utilidad, saldoCaja });
-
-        // ---- 2) Movimientos recientes desde /asientos ----
+        setKpis({ ingresos, gastos, utilidad, saldoCaja }); //se obtiene todos los asientos registrados
         const asientos = await api.getAsientos();
         const parseDate = (s) => new Date(s).getTime() || 0;
         const ultimos = (Array.isArray(asientos) ? asientos : [])
           .sort((a, b) => parseDate(b.fecha) - parseDate(a.fecha))
           .slice(0, 5)
           .flatMap((a) =>
-            (a.partidas || []).map((p) => ({
+            (a.partidas || []).map((p) => ({//se desarman los asientos para mostrar sus movimientos
               fecha: a.fecha,
-              cuenta: `${p.cuenta?.id || ""} ${p.cuenta?.nombre || ""}`.trim(),
+              cuenta: `${p.cuenta?.id || ""} ${p.cuenta?.nombre || ""}`.trim(),//codigo y nombre
               desc: a.descripcion || "",
-              debe: Number(p.debe || 0),
-              haber: Number(p.haber || 0),
+             
+              debe: Number(p.debe || 0), //monto debe o 0 si no aplica
+              haber: Number(p.haber || 0),//monto haber o 0 si no aplica
             }))
           );
 
@@ -105,10 +97,13 @@ export default function Home() {
     };
 
     cargar();
+
   }, []);
+
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
+      {/*encabezado */}
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 bg-white shadow-sm">
         <div className="mx-auto max-w-7xl flex h-16 items-center justify-center px-4">
           <img src={logo} alt="Logo" className="h-10 w-10 mr-4 rounded-full shadow" />
@@ -119,7 +114,7 @@ export default function Home() {
       <main className="flex-1 pt-16 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl w-full flex flex-col gap-8 h-full items-stretch justify-start py-6 md:py-8">
 
-          {/* Hero */}
+          {/* mensaje principal y accesos directos */}
           <section className="w-full overflow-hidden rounded-xl bg-slate-100 shadow-lg">
             <div className="grid md:grid-cols-2">
               <div className="flex flex-col justify-center p-8 md:p-12">
@@ -131,12 +126,14 @@ export default function Home() {
                 </p>
 
                 <div className="mt-8 flex flex-wrap items-center gap-3">
+                  {/* btn registrar asiento*/}
                   <Link
                     to="/Asientos"
                     className="rounded-lg border-4 border-blue-200 bg-blue-50 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-100 transition"
                   >
                     Registrar asiento
                   </Link>
+                  {/* btn catalogo */}
                   <Link
                     to="/Catalogo"
                     className="rounded-lg border-4 border-emerald-200 bg-emerald-50 px-3 py-2 text-center text-sm font-medium text-emerald-700 hover:bg-emerald-100 transition"
@@ -152,7 +149,7 @@ export default function Home() {
             </div>
           </section>
 
-          {/* KPIs */}
+          {/* btn indicadores */}
           <section className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { label: "Ingresos del mes", value: kpis.ingresos },
@@ -164,14 +161,14 @@ export default function Home() {
                 <p className="text-sm text-slate-500">{kpi.label}</p>
                 <div className="mt-2 flex items-baseline gap-2">
                   <span className="text-2xl font-bold text-slate-900">
-                    {money(kpi.value)}
+                    {dinero(kpi.value)}
                   </span>
                 </div>
               </div>
             ))}
           </section>
 
-          {/* Acciones rápidas */}
+          {/* section acciones rapidas */}
           <section className="w-full rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
             <h3 className="text-base font-semibold text-slate-900">Acciones rápidas</h3>
             <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -208,32 +205,32 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Resumen + Movimientos */}
+          {/* panel con resumen de movimientos*/}
           <section className="w-full grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-1">
               <h3 className="text-base font-semibold text-slate-900">Resumen de flujo de caja</h3>
               <div className="mt-3 space-y-2">
+                {/* panel de ingresos del periodo*/}
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-slate-600">Entradas</span>
                   <span className="font-semibold text-emerald-700">
-                    {money(kpis.ingresos)}
+                    {dinero(kpis.ingresos)}
                   </span>
                 </div>
+                {/* panel de gastos */}
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-slate-600">Salidas</span>
                   <span className="font-semibold text-rose-700">
-                    {money(kpis.gastos)}
+                    {dinero(kpis.gastos)}
                   </span>
                 </div>
+                {/* panel de saldo */}
                 <div className="flex items-center justify-between text-sm border-t border-slate-100 pt-2">
                   <span className="text-slate-800 font-medium">Saldo</span>
                   <span className="font-bold text-slate-900">
-                    {money(kpis.ingresos - kpis.gastos)}
+                    {dinero(kpis.ingresos - kpis.gastos)}
                   </span>
                 </div>
-              </div>
-              <div className="mt-4 h-24 rounded-md bg-slate-100 flex items-center justify-center text-xs text-slate-500">
-                {/* Placeholder */}
               </div>
             </div>
 
@@ -268,26 +265,33 @@ export default function Home() {
                       </td>
                     </tr>
                   ) : (
+                    /*
+                      Mostramos cada línea de partida:
+                      - La “Cuenta” ayuda a identificar qué se está afectando (Caja, Ventas, Servicios, etc.).
+                      - Debe/Haber muestran hacia qué lado fue el movimiento (por el método de partida doble).
+                    */
                     recent.map((m, i) => (
                       <tr key={i} className="text-slate-700">
                         <td className="py-2 pr-4">{m.fecha || ""}</td>
                         <td className="py-2 pr-4">{m.cuenta || ""}</td>
                         <td className="py-2 pr-4">{m.desc || ""}</td>
                         <td className="py-2 pr-4 text-right">
-                          {m.debe ? money(m.debe) : "-"}
+                          {m.debe ? dinero(m.debe) : "-"}
                         </td>
                         <td className="py-2 pr-0 text-right">
-                          {m.haber ? money(m.haber) : "-"}
+                          {m.haber ? dinero(m.haber) : "-"}
                         </td>
                       </tr>
                     ))
                   )}
                 </tbody>
               </table>
+              {/* Si hubo un error al cargar, lo mostramos en chiquito para no asustar al usuario */}
               {err && <div className="mt-3 text-xs text-rose-600">{err}</div>}
             </div>
           </section>
 
+          {/* Créditos del equipo desarrollador: útil para proyectos académicos y transparencia */}
           <section className="w-full rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <h3 className="text-lg font-bold text-slate-900 mb-4">
               Desarrollado por:
@@ -313,6 +317,7 @@ export default function Home() {
         </div>
       </main>
 
+      {/* Pie de página con derechos y año dinámico */}
       <footer className=" bg-slate-100 text-center text-sm text-slate-500 p-4">
         &copy; {new Date().getFullYear()} Conta Pro. Todos los derechos reservados.
       </footer>
