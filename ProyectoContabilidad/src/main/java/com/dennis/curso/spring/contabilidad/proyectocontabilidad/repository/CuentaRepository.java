@@ -6,5 +6,6 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface CuentaRepository extends CrudRepository<Cuenta,String> {
-    List<Cuenta> findAllByActivoTrue();
+    //repository de cuenta que extiende de CrudRepository
+    List<Cuenta> findAllByActivoTrue(); //funciona abstracta para buscar por activo
 }

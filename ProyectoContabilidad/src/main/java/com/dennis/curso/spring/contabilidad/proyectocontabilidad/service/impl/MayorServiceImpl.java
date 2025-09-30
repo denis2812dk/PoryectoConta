@@ -22,14 +22,16 @@ public class MayorServiceImpl implements MayorService {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> generarMayor(){
+    public Map<String, Object> generarMayor(){//inplementacion para generar el libro mayor
         Iterable<Asiento> asientos = asientoRepository.findAll();
 
         Map<String, Object> mayor = new LinkedHashMap<>();
 
         for(Asiento asiento: asientos){
             if(asiento.getPartidas() == null) continue;
+
             for(Partida partida: asiento.getPartidas()){
+
                 if(partida.getCuenta() == null || partida.getCuenta().getId() == null) continue;
                 final String cuentaId = partida.getCuenta().getId();
                 final String nombre = Optional.ofNullable(partida.getCuenta().getNombre()).orElse(cuentaId);
@@ -52,15 +54,18 @@ public class MayorServiceImpl implements MayorService {
                 lista.put("haber", ((BigDecimal) lista.get("haber")).add(h));
                 BigDecimal nuevoSaldo = ((BigDecimal)lista.get("saldo")).add(d.subtract(h));
                 lista.put("saldo", nuevoSaldo);
+
                 @SuppressWarnings("unchecked")
                 List<Map<String, Object>> movs = (List<Map<String, Object>>) lista.get("movimientos");
                 Map<String, Object> mov = new LinkedHashMap<>();
+
                 mov.put("fecha", asiento.getFecha());
                 mov.put("descripcion", asiento.getDescripcion());
                 mov.put("debe", d);
                 mov.put("haber", h);
                 mov.put("saldoAcumulado", nuevoSaldo);
                 movs.add(mov);
+
             }
         }
         return mayor;

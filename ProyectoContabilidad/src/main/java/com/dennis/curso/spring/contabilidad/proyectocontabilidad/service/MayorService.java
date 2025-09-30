@@ -4,5 +4,5 @@ import java.util.Map;
 
 public interface MayorService {
 
-    Map<String, Object> generarMayor();
+    Map<String, Object> generarMayor(); //Metodo abstracto para generar la mayorizacion
 }

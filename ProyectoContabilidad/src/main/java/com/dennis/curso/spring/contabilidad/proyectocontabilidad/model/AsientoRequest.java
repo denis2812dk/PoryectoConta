@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class AsientoRequest {
+    //dto para transferir datos
     public static class PartidaDTO {
         public String cuentaId;                // viene como String desde el front
         public BigDecimal debe = BigDecimal.ZERO;

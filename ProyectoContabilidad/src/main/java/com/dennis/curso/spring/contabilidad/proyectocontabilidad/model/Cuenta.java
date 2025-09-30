@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "cuentas")
 public class Cuenta {
-
+    //MODELO PRINCIPAL DE CUENTA PARA CREAR EN LA BD
     @Id
     @Column(length = 20)
     private String id;
@@ -25,6 +25,8 @@ public class Cuenta {
     @Column(nullable = false)
     private Boolean activo = true;
 
+
+    //GETTERS AND SETTERS
     public String getId() {
         return id;
     }

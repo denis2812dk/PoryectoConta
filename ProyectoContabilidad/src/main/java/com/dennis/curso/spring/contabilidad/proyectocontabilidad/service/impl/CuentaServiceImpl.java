@@ -17,28 +17,28 @@ public class CuentaServiceImpl implements CuentaService {
     private final CuentaRepository repo;
     private final PartidaRepository partidaRepo;
 
-    public CuentaServiceImpl(CuentaRepository repo, PartidaRepository partidaRepo) {
+    public CuentaServiceImpl(CuentaRepository repo, PartidaRepository partidaRepo) {//
         this.repo = repo;
         this.partidaRepo = partidaRepo;
     }
 
 
     @Override
-    public List<Cuenta> findAll() {
+    public List<Cuenta> findAll() { //Iplementacion para listar todas las cuentas
         List<Cuenta> cuentas = new ArrayList<>();
         repo.findAll().forEach(cuentas::add);
         return cuentas;
     }
 
     @Override
-    public Cuenta save(Cuenta c){return repo.save(c);}
+    public Cuenta save(Cuenta c){return repo.save(c);} //implementacion para guardar una cuenta
 
     @Override
-    public boolean exists(String id){return repo.existsById(id);}
+    public boolean exists(String id){return repo.existsById(id);} //implementacion para verificar si una cuesta existe
 
     @Override
     @Transactional
-    public void deleteById(String id) {
+    public void deleteById(String id) { //inplementacion de borrar una cuenta por id
         if (!repo.existsById(id)) {
             throw new NoSuchElementException("La cuenta " + id + " no existe");
         }
@@ -47,13 +47,12 @@ public class CuentaServiceImpl implements CuentaService {
             throw new IllegalStateException("No se puede eliminar: la cuenta tiene movimientos (" + movimientos + ")");
         }
         repo.deleteById(id);
-        // Si usas JpaRepository, puedes forzar flush:
-        // repo.flush();
+
     }
 
     @Override
     @Transactional
-    public Cuenta update(String id, Cuenta body) {
+    public Cuenta update(String id, Cuenta body) { //implementacion eliminar una cuenta
         Cuenta c = repo.findById(id).orElseThrow(() -> new NoSuchElementException("Cuenta no encontrada: " + id));
 
 
@@ -66,7 +65,7 @@ public class CuentaServiceImpl implements CuentaService {
     }
 
     @Override
-    @Transactional
+    @Transactional //implementacion inactivar una cuenta
     public void inactivar(String id) {
         Cuenta c = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("La cuenta " + id + " no existe"));
@@ -74,7 +73,7 @@ public class CuentaServiceImpl implements CuentaService {
     }
 
     @Override
-    @Transactional
+    @Transactional //inplementacion inactivar una cuenta
     public void reactivar(String id) {
         Cuenta c = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("La cuenta " + id + " no existe"));

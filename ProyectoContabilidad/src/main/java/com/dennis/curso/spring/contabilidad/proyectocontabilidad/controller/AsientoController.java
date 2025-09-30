@@ -20,14 +20,14 @@ public class AsientoController {
         this.asientoService = asientoService;
     }
 
+
     @GetMapping
     public List<Asiento> all() {
         return  asientoService.findAll();
-    }
-
+    }//lista todos los asientos en la lista asientos con una peticion get
 
     @PostMapping
-    public ResponseEntity<?> crear(@Valid @RequestBody AsientoRequest req) {
+    public ResponseEntity<?> crear(@Valid @RequestBody AsientoRequest req) { //crea un asiento con una peticion post
         Asiento a = asientoService.crear(req);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", a.getId()));
     }

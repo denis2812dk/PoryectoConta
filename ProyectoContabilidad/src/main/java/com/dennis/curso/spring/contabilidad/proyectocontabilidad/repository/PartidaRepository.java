@@ -4,5 +4,6 @@ import com.dennis.curso.spring.contabilidad.proyectocontabilidad.model.Partida;
 import org.springframework.data.repository.CrudRepository;
 
 public interface PartidaRepository extends CrudRepository<Partida,String> {
-    long countByCuenta_Id(String id);
+    //repository de Partida que extiende de crud repository
+    long countByCuenta_Id(String id); //funcion abstracta para contar por id de una cuenta
 }

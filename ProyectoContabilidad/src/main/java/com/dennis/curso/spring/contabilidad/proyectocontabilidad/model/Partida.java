@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "partidas")
 public class Partida {
+
+    //MODELO DE PARTIDA PARA CREAR EN LA BD
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -27,6 +29,7 @@ public class Partida {
     @Column(precision = 18, scale = 2)
     private BigDecimal haber;
 
+    //GETTERS AND SETTERS
     public Long getId() {
         return id;
     }

@@ -28,7 +28,7 @@ public class AsientoServiceImpl  implements AsientoService {
 
     @Override
     @Transactional
-    public Asiento crear(AsientoRequest req) {
+    public Asiento crear(AsientoRequest req) { //implementacion para crear un asiento
         if (req.partidas == null || req.partidas.size() < 2) {
             throw new IllegalArgumentException("El asiento debe tener al menos dos partidas.");
         }
@@ -69,7 +69,6 @@ public class AsientoServiceImpl  implements AsientoService {
             p.setDebe(debe);
             p.setHaber(haber);
 
-            // clave: setear relación padre-hijo
             a.addPartida(p);
 
             totalDebe  = totalDebe.add(debe);
@@ -80,11 +79,11 @@ public class AsientoServiceImpl  implements AsientoService {
             throw new IllegalArgumentException("El asiento no está balanceado (Debe ≠ Haber).");
         }
 
-        return asientoRepo.save(a); // cascade inserta partidas con asiento_id
+        return asientoRepo.save(a);
     }
 
     @Override
     public List<Asiento> findAll() {
         return asientoRepo.findAll();
-    }
+    } //implementacion para listar todos los asientos
 }

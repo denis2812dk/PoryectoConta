@@ -13,7 +13,9 @@ public class Datos {
     @Bean
     CommandLineRunner seedCuentas(CuentaRepository cuentaRepository) {
 
-        return args -> {
+
+
+        return args -> {//crea una cuenta principal de prueba
             if(cuentaRepository.count() == 0){
                 Cuenta cuenta1 = new Cuenta();
                 cuenta1.setId("1101");

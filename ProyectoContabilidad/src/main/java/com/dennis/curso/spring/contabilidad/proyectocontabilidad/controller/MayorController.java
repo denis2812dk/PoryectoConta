@@ -15,9 +15,9 @@ public class MayorController {
 
     public MayorController(MayorService mayorService) {
         this.mayorService = mayorService;
-    }
+    } //
 
-    @GetMapping
+    @GetMapping//obtiene la mayorizacion mediante una peticion get
     public Map<String, Object>mayor() {
         return  mayorService.generarMayor();
     }

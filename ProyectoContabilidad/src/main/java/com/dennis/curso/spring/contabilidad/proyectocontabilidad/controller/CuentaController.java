@@ -12,20 +12,22 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/cuentas")
 public class CuentaController {
-    private final CuentaService cuentaService;
 
-    public CuentaController(CuentaService cuentaService) {
+    private final CuentaService cuentaService; //crea un objeto de cuenta service
+
+    public CuentaController(CuentaService cuentaService) { //
         this.cuentaService = cuentaService;
     }
 
     @GetMapping
-   public List<Cuenta> all() {return cuentaService.findAll();}
+   public List<Cuenta> all() {return cuentaService.findAll();}//lista todas las cuentas en una lista mediante la peticion get
     @PostMapping
     public Cuenta create(@Valid @RequestBody Cuenta cuenta) {
         return cuentaService.save(cuenta);
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Cuenta> update(
+    public ResponseEntity<Cuenta> update( //actualiza una cuenta mediante mediante put
             @PathVariable String id,
             @Valid @RequestBody Cuenta body) {
 
@@ -37,7 +39,7 @@ public class CuentaController {
         return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}") //elimina una cuenta mediante una peticion delete
     public void delete(@PathVariable String id) {
         cuentaService.deleteById(id);
     }

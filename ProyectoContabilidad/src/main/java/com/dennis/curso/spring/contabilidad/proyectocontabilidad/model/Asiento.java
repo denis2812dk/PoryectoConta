@@ -11,6 +11,7 @@ import java.util.List;
 @Entity
 @Table(name = "asientos")
 public class Asiento {
+    //MODELO DE ASIENTO PARA CREAR EN LA BASE DE DATOS
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -26,12 +27,13 @@ public class Asiento {
     )
     private List<Partida> partidas = new ArrayList<>();
 
-    // helper opcional
+
     public void addPartida(Partida p) {
         p.setAsiento(this);
         this.partidas.add(p);
     }
 
+    //GETTERS AND SETTERS
     public Long getId() {
         return id;
     }
