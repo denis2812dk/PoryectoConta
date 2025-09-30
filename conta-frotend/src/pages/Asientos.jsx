@@ -2,7 +2,6 @@ import AsientoForm from "../components/AsientoForm";
 import { useState } from "react";
 
 export default function Asientos() {
-  // si quieres notificar guardados, puedes dejar este estado
   const [savedTick, setSavedTick] = useState(0);
 
   return (

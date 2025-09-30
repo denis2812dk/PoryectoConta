@@ -22,7 +22,7 @@ async function http(path, opts = {}) {
     : null;
 
   if (!res.ok) {
-    // Construye un error amable con detalle
+  // arma un mensaje de error usando lo que haya disponible (error, texto o status)
     const msg =
       (parsed && (parsed.error || parsed.message)) ||
       (text && text.slice(0, 400)) ||

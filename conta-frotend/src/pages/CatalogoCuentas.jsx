@@ -124,7 +124,7 @@ export default function CatalogoCuentas() {
       await api.crearCuenta({
         id: String(form.id).trim(),
         nombre: form.nombre.trim(),
-        tipo: form.tipo, // puedes ignorarlo en backend si prefieres derivarlo
+        tipo: form.tipo, 
       });
       setForm({ id: "", nombre: "", tipo: "Activo" });
       setAlert({ type: "success", msg: "Cuenta agregada correctamente." });
@@ -137,7 +137,7 @@ export default function CatalogoCuentas() {
   };
 
   const startEdit = (c) => {
-    setForm({ id: String(c.id), nombre: c.nombre, tipo: c.tipoUI }); // mostramos tipo UI al editar
+    setForm({ id: String(c.id), nombre: c.nombre, tipo: c.tipoUI }); 
     setErrors({});
     setEditingId(String(c.id));
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -155,7 +155,8 @@ export default function CatalogoCuentas() {
       setLoading(true);
       await api.actualizarCuenta(String(editingId), {
         nombre: form.nombre.trim(),
-        tipo: form.tipo, // opcional que backend lo use
+        tipo: form.tipo, // enviamas el tipo de cuenta 
+
       });
       setAlert({ type: "success", msg: "Cuenta actualizada." });
       cancelarEdicion();
@@ -176,7 +177,7 @@ export default function CatalogoCuentas() {
       setAlert({ type: "success", msg: "Cuenta eliminada." });
       if (editingId === confirmDel.id) cancelarEdicion();
       await cargar();
-      setConfirmDel({ open: false, id: null, nombre: "" }); // cerrar modal en éxito
+      setConfirmDel({ open: false, id: null, nombre: "" }); 
     } catch (err) {
       const msg = err.message || "";
       if (msg.toLowerCase().includes("tiene movimientos")) {
@@ -227,7 +228,6 @@ export default function CatalogoCuentas() {
 
     const { key, asc } = sort;
     arr.sort((a, b) => {
-      // si ordenas por "tipo", usar tipoUI
       const kk = key === "tipo" ? "tipoUI" : key;
       const va = String(a[kk] ?? "").toLowerCase();
       const vb = String(b[kk] ?? "").toLowerCase();
@@ -275,7 +275,7 @@ export default function CatalogoCuentas() {
       [
         c.id,
         `"${String(c.nombre).replaceAll('"', '""')}"`,
-        c.tipoUI, // exporta tipo normalizado
+        c.tipoUI, // exportar tipo normalizado
         c.activo !== false ? "Activa" : "Inactiva",
       ].join(",")
     );

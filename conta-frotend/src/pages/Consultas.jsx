@@ -39,7 +39,7 @@ export default function Consultas() {
     setLoading(true);
     setErr("");
     try {
-      const asientos = await api.getAsientos(); // [{ id, fecha, descripcion, partidas: [...] }, ...]
+      const asientos = await api.getAsientos(); // la API devulve asientos con sus partidas: { id, fecha, descripcion, partidas: [...] }
       const flat = (Array.isArray(asientos) ? asientos : [])
         .flatMap((a) =>
           (a.partidas || []).map((p) => ({
