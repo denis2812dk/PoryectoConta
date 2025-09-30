@@ -8,7 +8,7 @@ public interface CuentaService {
     List<Cuenta> findAll();
     Cuenta save(Cuenta c);
     boolean exists(String id);
-
+    Cuenta update(String id, Cuenta body);
     void deleteById(String id);
 
     void inactivar(String id);

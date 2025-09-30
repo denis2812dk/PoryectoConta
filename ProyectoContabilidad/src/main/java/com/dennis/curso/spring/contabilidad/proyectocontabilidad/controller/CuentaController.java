@@ -3,6 +3,7 @@ package com.dennis.curso.spring.contabilidad.proyectocontabilidad.controller;
 import com.dennis.curso.spring.contabilidad.proyectocontabilidad.model.Cuenta;
 import com.dennis.curso.spring.contabilidad.proyectocontabilidad.service.CuentaService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,19 @@ public class CuentaController {
     public Cuenta create(@Valid @RequestBody Cuenta cuenta) {
         return cuentaService.save(cuenta);
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<Cuenta> update(
+            @PathVariable String id,
+            @Valid @RequestBody Cuenta body) {
+
+        if (body.getId() != null && !id.equals(body.getId())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        Cuenta updated = cuentaService.update(id, body);
+        return ResponseEntity.ok(updated);
+    }
+
     @DeleteMapping("/{id}")
     public void delete(@PathVariable String id) {
         cuentaService.deleteById(id);

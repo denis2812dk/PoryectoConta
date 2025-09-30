@@ -53,6 +53,20 @@ public class CuentaServiceImpl implements CuentaService {
 
     @Override
     @Transactional
+    public Cuenta update(String id, Cuenta body) {
+        Cuenta c = repo.findById(id).orElseThrow(() -> new NoSuchElementException("Cuenta no encontrada: " + id));
+
+
+        if (body.getNombre() != null) c.setNombre(body.getNombre().trim());
+        if (body.getTipo() != null)   c.setTipo(body.getTipo().trim());
+        if (body.getActivo() != null) c.setActivo(body.getActivo());
+
+
+        return c;
+    }
+
+    @Override
+    @Transactional
     public void inactivar(String id) {
         Cuenta c = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("La cuenta " + id + " no existe"));
