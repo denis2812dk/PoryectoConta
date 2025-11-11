@@ -11,6 +11,8 @@ import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import ImportContactsIcon from "@mui/icons-material/ImportContacts";
+import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
+import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 
 const navItems = [
@@ -20,6 +22,9 @@ const navItems = [
   { label: "CONSULTAS", to: "/Consultas", icon: <SearchIcon /> },
   { label: "LIBRO DIARIO", to: "/LibroDiario", icon: <MenuBookIcon /> },
   { label: "LIBRO MAYOR", to: "/LibroMayor", icon: <ImportContactsIcon /> },
+  // 🔽 nuevos
+  { label: "BALANCE DE COMPROBACIÓN", to: "/balance-comprobacion", icon: <TableChartOutlinedIcon /> },
+  { label: "ESTADOS FINANCIEROS", to: "/estados", icon: <AssessmentOutlinedIcon /> },
 ];
 
 export default function Sidebar({
@@ -48,7 +53,6 @@ export default function Sidebar({
         },
       }}
     >
-     
       <Toolbar
         sx={{
           px: 2,
@@ -62,31 +66,30 @@ export default function Sidebar({
         {open ? (
           <>
             <Typography variant="subtitle1" sx={{ fontWeight: 700, letterSpacing: 0.3 }}>
-              
+              Sistema Contable
             </Typography>
             {variant === "persistent" && (
               <IconButton
                 size="small"
                 onClick={onClose}
-                sx={{  color: "#0B1220", "&:hover": { bgcolor: "#ffffffff"} }}
+                sx={{ color: "#0B1220", "&:hover": { bgcolor: "#F3F4F6" } }}
                 aria-label="Cerrar sidebar"
               >
-                
+                <ChevronLeftIcon />
               </IconButton>
             )}
           </>
         ) : (
-          
           <Box
             sx={{
               width: 32, height: 32, borderRadius: "50%",
-              bgcolor: "rgba(255,255,255,0.2)",
+              bgcolor: "rgba(0,0,0,0.06)",
             }}
           />
         )}
       </Toolbar>
 
-      <Divider sx={{ borderColor: "#ffffff" }} />
+      <Divider sx={{ borderColor: "#F3F4F6" }} />
 
       <Box sx={{ py: 1 }}>
         <List sx={{ px: open ? 1 : 0.5 }}>
@@ -107,11 +110,11 @@ export default function Sidebar({
                   borderRadius: 2,
                   gap: open ? 1 : 0,
                   "&.active": {
-                    color: "#ffffff",
-                    bgcolor: "#313659ff",
+                    color: "#FFFFFF",
+                    bgcolor: "#313659",
                   },
                   "&:hover": {
-                    bgcolor: "#F1F5F",
+                    bgcolor: "#F1F5F9", // <- corrige el valor inválido anterior
                   },
                 }}
               >
@@ -132,11 +135,10 @@ export default function Sidebar({
 
       <Box sx={{ flexGrow: 1 }} />
 
-      
       <Box sx={{ p: open ? 2 : 1, opacity: 0.85 }}>
         {open ? (
           <Typography variant="caption">
-           
+            © {new Date().getFullYear()} La Parada Digital 2025
           </Typography>
         ) : (
           <Typography variant="caption"></Typography>

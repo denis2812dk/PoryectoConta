@@ -13,6 +13,8 @@ import Consultas from "./pages/Consultas";
 import Home from "./pages/Home";
 import LibroDiario from "./pages/LibroDiario";
 import LibroMayor from "./pages/LibroMayor";
+import BalanceComprobacion from "./pages/BalanceComprobacion";
+import EstadosFinancieros from "./pages/EstadosFinancieros";
 
 
 const drawerWidth = 260;
@@ -31,30 +33,30 @@ export default function App() {
   const showToggleButton = !isHome;
   //const applyLeftMargin = sidebarOpen && sidebarVariant === "persistent";
 
-    const layoutConfig = {
-        "/": { noPadding: true, bg: "transparent" },
-        "/Catalogo": { noPadding: true, bg: "transparent" },
-        default: { noPadding: false, padding: { xs: 2, sm: 2.5, md: 3 }, bg: "transparent" },
-    };
-    const pageOpts = layoutConfig[location.pathname] || layoutConfig.default;
+  const layoutConfig = {
+    "/": { noPadding: true, bg: "transparent" },
+    "/Catalogo": { noPadding: true, bg: "transparent" },
+    default: { noPadding: false, padding: { xs: 2, sm: 2.5, md: 3 }, bg: "transparent" },
+  };
+  const pageOpts = layoutConfig[location.pathname] || layoutConfig.default;
 
-    const applyLeftMargin = !isHome && sidebarOpen && sidebarVariant === "persistent";
+  const applyLeftMargin = !isHome && sidebarOpen && sidebarVariant === "persistent";
 
   return (
     <Box sx={{ display: "flex", width: "100vw", minHeight: "100vh", boxSizing: "border-box", marginRight: "8px" }}>
       <CssBaseline />
 
-        {!isHome && (
-            <Sidebar
-                open={sidebarOpen}
-                onClose={showToggleButton ? toggle : undefined}
-                drawerWidth={drawerWidth}
-                variant={sidebarVariant}
-            />
-        )}
+      {!isHome && (
+        <Sidebar
+          open={sidebarOpen}
+          onClose={showToggleButton ? toggle : undefined}
+          drawerWidth={drawerWidth}
+          variant={sidebarVariant}
+        />
+      )}
 
 
-        {showToggleButton && (
+      {showToggleButton && (
         <IconButton
           onClick={toggle}
           aria-label="Abrir menú"
@@ -76,10 +78,10 @@ export default function App() {
         component="main"
         sx={{
           flexGrow: 1,
-            height: "100vh",
-            bgcolor: pageOpts.bg,
-            p: pageOpts.noPadding ? 0 : (pageOpts.padding || { xs: 2, sm: 2.5, md: 3 }),
-            //ml: applyLeftMargin ? `${drawerWidth}px` : 0,
+          height: "100vh",
+          bgcolor: pageOpts.bg,
+          p: pageOpts.noPadding ? 0 : (pageOpts.padding || { xs: 2, sm: 2.5, md: 3 }),
+          //ml: applyLeftMargin ? `${drawerWidth}px` : 0,
         }}
       >
         <Routes>
@@ -89,6 +91,8 @@ export default function App() {
           <Route path="/Consultas" element={<Consultas />} />
           <Route path="/LibroDiario" element={<LibroDiario />} />
           <Route path="/LibroMayor" element={<LibroMayor />} />
+          <Route path="/balance-comprobacion" element={<BalanceComprobacion />} />
+          <Route path="/estados" element={<EstadosFinancieros />} />
           <Route path="*" element={<h1>404 – No encontrado</h1>} />
         </Routes>
       </Box>

@@ -78,3 +78,32 @@ export const api = {
   },
   getAsientosRecientes: () => http("/asientos"),
 };
+
+export const reportes = {
+  balanceComprobacion: (desde, hasta) => {
+    const qs = new URLSearchParams(
+      Object.fromEntries(
+        Object.entries({ desde, hasta }).filter(([_, v]) => v)
+      )
+    ).toString();
+    return http(`/reportes/balance-comprobacion${qs ? `?${qs}` : ""}`);
+  },
+
+  estadoResultados: (desde, hasta) => {
+    const qs = new URLSearchParams(
+      Object.fromEntries(
+        Object.entries({ desde, hasta }).filter(([_, v]) => v)
+      )
+    ).toString();
+    return http(`/reportes/estado-resultados${qs ? `?${qs}` : ""}`);
+  },
+
+  balanceGeneral: (hasta) => {
+    const qs = new URLSearchParams(
+      Object.fromEntries(
+        Object.entries({ hasta }).filter(([_, v]) => v)
+      )
+    ).toString();
+    return http(`/reportes/balance-general${qs ? `?${qs}` : ""}`);
+  }
+};
