@@ -54,6 +54,24 @@ public class ReportesServiceImpl implements ReportesService {
         return mayor;
     }
 
+    /** Detecta cuentas padre: un id es padre si es prefijo de otro id distinto */
+    private static Set<String> detectarPadres(Set<String> ids) {
+        Set<String> padres = new HashSet<>();
+        List<String> lista = new ArrayList<>(ids);
+        for (int i = 0; i < lista.size(); i++) {
+            String a = lista.get(i);
+            for (int j = 0; j < lista.size(); j++) {
+                if (i == j) continue;
+                String b = lista.get(j);
+                if (b.startsWith(a) && !b.equals(a)) {
+                    padres.add(a);
+                    break;
+                }
+            }
+        }
+        return padres;
+    }
+
     private static boolean startsWith(String cuentaId, String prefijo) {
         return cuentaId != null && cuentaId.startsWith(prefijo);
     }
@@ -62,6 +80,7 @@ public class ReportesServiceImpl implements ReportesService {
     @Transactional(readOnly = true)
     public Map<String, Object> balanceComprobacion() {
         Map<String, Map<String, Object>> mayor = mayorizar();
+        Set<String> padres = detectarPadres(mayor.keySet()); // <-- solo hojas
 
         BigDecimal totalDebe = BigDecimal.ZERO;
         BigDecimal totalHaber = BigDecimal.ZERO;
@@ -69,6 +88,8 @@ public class ReportesServiceImpl implements ReportesService {
         List<Map<String, Object>> filas = new ArrayList<>();
         for (Map<String, Object> cta : mayor.values()) {
             String id = (String) cta.get("cuentaId");
+            if (padres.contains(id)) continue; // omite padres
+
             String nombre = (String) cta.get("nombre");
             BigDecimal saldo = (BigDecimal) cta.get("saldo");
 
@@ -86,6 +107,9 @@ public class ReportesServiceImpl implements ReportesService {
             filas.add(fila);
         }
 
+        // Orden estable por cuentaId (legibilidad)
+        filas.sort(Comparator.comparing(m -> (String) m.get("cuentaId")));
+
         Map<String, Object> out = new LinkedHashMap<>();
         out.put("filas", filas);
         out.put("totalDebe", totalDebe);
@@ -97,12 +121,15 @@ public class ReportesServiceImpl implements ReportesService {
     @Transactional(readOnly = true)
     public Map<String, Object> estadoResultados() {
         Map<String, Map<String, Object>> mayor = mayorizar();
+        Set<String> padres = detectarPadres(mayor.keySet()); // <-- solo hojas
 
         BigDecimal ingresos = BigDecimal.ZERO;     // grupo 5 (naturaleza acreedora)
         BigDecimal costosGastos = BigDecimal.ZERO; // grupo 4 (sumar con signo)
 
         for (Map<String, Object> cta : mayor.values()) {
             String id = (String) cta.get("cuentaId");
+            if (padres.contains(id)) continue; // omite padres
+
             BigDecimal saldo = (BigDecimal) cta.get("saldo");
 
             if (startsWith(id, "5")) {
@@ -111,7 +138,7 @@ public class ReportesServiceImpl implements ReportesService {
                 ingresos = ingresos.add(aporte);
             } else if (startsWith(id, "4")) {
                 // costos/gastos periódicos (compras, ajustes A/B/C, rebajas negativas, gastos positivos)
-                costosGastos = costosGastos.add(saldo); // <- CON SU SIGNO
+                costosGastos = costosGastos.add(saldo); // con su signo
             }
         }
 
@@ -128,18 +155,20 @@ public class ReportesServiceImpl implements ReportesService {
     @Transactional(readOnly = true)
     public Map<String, Object> balanceGeneral() {
         Map<String, Map<String, Object>> mayor = mayorizar();
+        Set<String> padres = detectarPadres(mayor.keySet()); // <-- solo hojas
 
-        BigDecimal activos = BigDecimal.ZERO;  // 1xxxx  -> sumar CON SU SIGNO para netear padre/hijo
-        BigDecimal pasivos = BigDecimal.ZERO;  // 2xxxx  -> sumar ABS de saldos negativos (naturaleza acreedora)
-        BigDecimal capital = BigDecimal.ZERO;  // 3xxxx  -> sumar ABS de saldos negativos (naturaleza acreedora)
+        BigDecimal activos = BigDecimal.ZERO;  // 1xxxx  -> sumar CON SU SIGNO para netear
+        BigDecimal pasivos = BigDecimal.ZERO;  // 2xxxx  -> sumar ABS de saldos negativos (acreedor)
+        BigDecimal capital = BigDecimal.ZERO;  // 3xxxx  -> sumar ABS de saldos negativos (acreedor)
 
         for (Map<String, Object> cta : mayor.values()) {
             String id = (String) cta.get("cuentaId");
+            if (padres.contains(id)) continue; // omite padres
+
             BigDecimal saldo = (BigDecimal) cta.get("saldo");
 
             if (startsWith(id, "1")) {
-                // Activos: sumar con signo (si alguna subcuenta quedó acreedora, resta)
-                activos = activos.add(saldo);
+                activos = activos.add(saldo); // con su signo
             } else if (startsWith(id, "2")) {
                 if (saldo.compareTo(BigDecimal.ZERO) < 0) {
                     pasivos = pasivos.add(saldo.abs());
@@ -151,7 +180,7 @@ public class ReportesServiceImpl implements ReportesService {
             }
         }
 
-        // Utilidad completa (positiva o negativa)
+        // Utilidad completa (positiva o negativa) calculada con la misma regla de hojas
         Map<String, Object> er = estadoResultados();
         BigDecimal utilidad = (BigDecimal) er.get("utilidad");
 

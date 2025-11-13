@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { reportes } from "../app/api";
-import DateFilters from "../components/DateFilters";
 
 const money = (n) =>
   Number(n ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -9,12 +8,13 @@ export default function BalanceComprobacion() {
   const [data, setData] = useState({ filas: [], totalDebe: 0, totalHaber: 0 });
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
-  const [filtros, setFiltros] = useState({ desde: "", hasta: "" });
 
-  const load = async ({ desde, hasta } = filtros) => {
+  const load = async () => {
     try {
       setLoading(true); setErr("");
-      const res = await reportes.balanceComprobacion(desde, hasta);
+      const res = await reportes.balanceComprobacion(); // <-- sin params
+      // orden opcional por cuentaId
+      res.filas = (res.filas || []).slice().sort((a, b) => (a.cuentaId > b.cuentaId ? 1 : -1));
       setData(res || { filas: [], totalDebe: 0, totalHaber: 0 });
     } catch (e) {
       setErr(String(e?.message || e));
@@ -23,19 +23,12 @@ export default function BalanceComprobacion() {
     }
   };
 
-  useEffect(() => { load(); /* inicial */ // eslint-disable-next-line
-  }, []);
+  useEffect(() => { load(); }, []);
 
   return (
     <div className="p-6 grid gap-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Balance de Comprobación</h2>
-        <DateFilters
-          initialDesde={filtros.desde}
-          initialHasta={filtros.hasta}
-          onApply={({ desde, hasta }) => { setFiltros({ desde, hasta }); load({ desde, hasta }); }}
-          onClear={() => { setFiltros({ desde: "", hasta: "" }); load({ desde: "", hasta: "" }); }}
-        />
       </div>
 
       {err && <div className="text-red-600">{err}</div>}

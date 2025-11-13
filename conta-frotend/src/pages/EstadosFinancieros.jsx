@@ -30,7 +30,8 @@ export default function EstadosFinancieros() {
     }
   };
 
-  useEffect(() => { load(); /* inicial */ // eslint-disable-next-line
+  useEffect(() => {
+    load(); /* inicial */ // eslint-disable-next-line
   }, []);
 
   return (
@@ -39,27 +40,7 @@ export default function EstadosFinancieros() {
       {err && <div className="text-red-600">{err}</div>}
       {loading && "Cargando..."}
 
-      {/* Controles de fecha */}
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div className="rounded-xl border p-4">
-          <div className="font-semibold mb-2">Rango para Estado de Resultados</div>
-          <DateFilters
-            initialDesde={erFiltros.desde}
-            initialHasta={erFiltros.hasta}
-            onApply={({ desde, hasta }) => { setErFiltros({ desde, hasta }); load({ desde, hasta }, bgHasta); }}
-            onClear={() => { setErFiltros({ desde: "", hasta: "" }); load({ desde: "", hasta: "" }, bgHasta); }}
-          />
-        </div>
-        <div className="rounded-xl border p-4">
-          <div className="font-semibold mb-2">Fecha de corte para Balance General</div>
-          <DateFilters
-            showDesde={false}
-            initialHasta={bgHasta}
-            onApply={({ hasta }) => { setBgHasta(hasta); load(erFiltros, hasta); }}
-            onClear={() => { setBgHasta(""); load(erFiltros, ""); }}
-          />
-        </div>
-      </div>
+     
 
       {er && (
         <section className="rounded-xl border p-4">
@@ -67,12 +48,17 @@ export default function EstadosFinancieros() {
           <div className="grid sm:grid-cols-2 gap-2">
             <div>Ingresos</div><div className="text-right">{money(er.ingresos)}</div>
             <div>Costos y Gastos</div><div className="text-right">{money(er.costosGastos)}</div>
-            <div className="font-semibold">Utilidad del Ejercicio</div>
-            <div className="text-right font-semibold">{money(er.utilidad)}</div>
+
+            {/* LÍNEA ACTUALIZADA */}
+            <div className="font-semibold">
+              {er.utilidad < 0 ? "Pérdida del Ejercicio" : "Utilidad del Ejercicio"}
+            </div>
+            <div className={`text-right font-semibold ${er.utilidad < 0 ? "text-red-600" : ""}`}>
+              {money(er.utilidad)}
+            </div>
           </div>
         </section>
       )}
-
       {bg && (
         <section className="rounded-xl border p-4">
           <h3 className="font-semibold mb-2">Balance General</h3>
