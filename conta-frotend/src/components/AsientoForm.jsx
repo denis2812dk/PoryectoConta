@@ -8,26 +8,32 @@ const buscarCuentaPorEntrada = (valor, cuentas) => {
   const val = String(valor || "").trim();
   //muestra la coincidencia del codigo y el nombre digitado
   let sel = cuentas.find((c) => etiquetaCuenta(c) === val);
-  if (sel) return sel;//coincidencia si solo se digito el id
+  if (sel) return sel; //coincidencia si solo se digito el id
   sel = cuentas.find((c) => String(c.id) === val);
-  if (sel) return sel;//coincidencia si solo se digito el nombre
+  if (sel) return sel; //coincidencia si solo se digito el nombre
   sel = cuentas.find((c) => c.nombre?.toLowerCase() === val.toLowerCase());
   return sel || null;
 };
 
-const parseMonto = (v) => {//convierte texto a numero y lo formatea 2 decimmales
+const parseMonto = (v) => {
+  //convierte texto a numero y lo formatea 2 decimmales
   const n = Number(String(v ?? "").replace(",", ".").trim());
   if (!isFinite(n) || n <= 0) return 0;
   return Math.round(n * 100) / 100;
 };
 
-export default function AsientoForm({ onSaved }) {
-  const [cuentas, setCuentas] = useState([]);// se monta el catalogo de cuentas
+export default function AsientoForm({
+  onSaved,
+  modo = "crear",         // "crear" | "editar"
+  asientoEditar = null,
+  onCancel,
+}) {
+  const [cuentas, setCuentas] = useState([]); // se monta el catalogo de cuentas
 
   const [form, setForm] = useState({
     fecha: new Date().toISOString().slice(0, 10),
     descripcion: "",
-    partidas: [{ cuentaId: "", debe: "", haber: "" }],
+    partidas: [{ cuentaId: "", cuentaTexto: "", debe: "", haber: "" }],
   });
 
   const [saving, setSaving] = useState(false);
@@ -44,44 +50,88 @@ export default function AsientoForm({ onSaved }) {
     [cuentas]
   );
 
-  const addRow = () => //agregar partida
+  // 🔹 cuando cambiamos a modo editar, rellenamos el formulario con el asiento seleccionado
+  useEffect(() => {
+    if (modo === "editar" && asientoEditar) {
+      setForm({
+        fecha: asientoEditar.fecha || new Date().toISOString().slice(0, 10),
+        descripcion: asientoEditar.descripcion || "",
+        partidas: (asientoEditar.partidas || []).map((p) => {
+          const cuentaId =
+            p.cuenta?.id ??
+            p.cuentaId ??
+            p.cuenta?.codigo ??
+            ""; // por si backend trae diferente
+          let cuentaTexto = "";
+          const sel = cuentasActivas.find(
+            (c) => String(c.id) === String(cuentaId)
+          );
+          if (sel) cuentaTexto = etiquetaCuenta(sel);
+
+          return {
+            cuentaId: cuentaId || "",
+            cuentaTexto,
+            debe: p.debe && Number(p.debe) > 0 ? String(p.debe) : "",
+            haber: p.haber && Number(p.haber) > 0 ? String(p.haber) : "",
+          };
+        }),
+      });
+    }
+
+    // si volvemos a crear, dejamos el form limpio
+    if (modo === "crear" && !asientoEditar) {
+      setForm({
+        fecha: new Date().toISOString().slice(0, 10),
+        descripcion: "",
+        partidas: [{ cuentaId: "", cuentaTexto: "", debe: "", haber: "" }],
+      });
+    }
+  }, [modo, asientoEditar, cuentasActivas]);
+
+  const addRow = () =>
+    //agregar partida
     setForm((f) => ({
       ...f,
-      partidas: [...f.partidas, { cuentaId: "", debe: "", haber: "" }],
+      partidas: [
+        ...f.partidas,
+        { cuentaId: "", cuentaTexto: "", debe: "", haber: "" },
+      ],
     }));
 
-  const delRow = (i) => //eliminar partida
+  const delRow = (i) =>
+    //eliminar partida
     setForm((f) => ({
       ...f,
       partidas: f.partidas.filter((_, idx) => idx !== i),
     }));
 
-
-  const update = (i, k, v) =>//bloqueo si una cuenta es seteada y es inactiva
+  const update = (i, k, v) =>
+    //bloqueo si una cuenta es seteada y es inactiva
     setForm((f) => {
       if (k === "cuentaId") {
         const sel = (cuentas || []).find((c) => String(c.id) === String(v));
         if (sel && sel.activo === false) {
           setAlert("Esa cuenta está inactiva y no se puede usar.");
-          return f; 
+          return f;
         }
       }
 
       const partidas = f.partidas.map((p, idx) => {
         if (idx !== i) return p;
 
-        if (k === "cuentaTexto") {//se setea una cuenta por el id
+        if (k === "cuentaTexto") {
+          //se setea una cuenta por el texto combinado
           const texto = v;
           const sel = buscarCuentaPorEntrada(texto, cuentasActivas);
           return {
             ...p,
-            cuentaTexto: texto,           
+            cuentaTexto: texto,
             cuentaId: sel ? sel.id : "",
           };
         }
 
-
-        if (k === "cuentaId") { // se setea una cuenta por el id
+        if (k === "cuentaId") {
+          // se setea una cuenta por el id
           const sel = (cuentas || []).find((c) => String(c.id) === String(v));
           return {
             ...p,
@@ -90,7 +140,7 @@ export default function AsientoForm({ onSaved }) {
           };
         }
 
-       //si el debe tiene valor el haber se pone en 0 y viceversa
+        //si el debe tiene valor el haber se pone en 0 y viceversa
         if (k === "debe") {
           const n = parseMonto(v);
           return { ...p, debe: v, haber: n > 0 ? "" : p.haber };
@@ -105,9 +155,9 @@ export default function AsientoForm({ onSaved }) {
 
       return { ...f, partidas };
     });
-  
-   
-  const partidasNumericas = useMemo( //se formatea los valores para evitar conflictos
+
+  const partidasNumericas = useMemo(
+    //se formatea los valores para evitar conflictos
     () =>
       form.partidas.map((p) => ({
         ...p,
@@ -117,20 +167,22 @@ export default function AsientoForm({ onSaved }) {
     [form.partidas]
   );
 
-  const totalDebe = useMemo( //se calcula el total del debe
+  const totalDebe = useMemo(
+    //se calcula el total del debe
     () => Number(sumDebe(partidasNumericas).toFixed(2)),
     [partidasNumericas]
   );
-  const totalHaber = useMemo( //se calcula el total del haber
+  const totalHaber = useMemo(
+    //se calcula el total del haber
     () => Number(sumHaber(partidasNumericas).toFixed(2)),
     [partidasNumericas]
   );
-  const diferencia = useMemo( //se calcula la diferencia
+  const diferencia = useMemo(
+    //se calcula la diferencia
     () => Number((totalDebe - totalHaber).toFixed(2)),
     [totalDebe, totalHaber]
   );
-  const balanced = Math.abs(diferencia) < 0.005;  //valida si esta balanceado
-
+  const balanced = Math.abs(diferencia) < 0.005; //valida si esta balanceado
 
   const filasConError = useMemo(
     () =>
@@ -141,8 +193,8 @@ export default function AsientoForm({ onSaved }) {
         const ambosCeros = d === 0 && h === 0; //no hay ni debe ni haber
         const ambosLlenos = d > 0 && h > 0; //ambos campos estan llenos
 
-        
-        const cuentaSel = (cuentas || []).find( //verifica si la cuenta esta inanctiva
+        const cuentaSel = (cuentas || []).find(
+          //verifica si la cuenta esta inanctiva
           (c) => String(c.id) === String(p.cuentaId)
         );
         const inactiva = !!(cuentaSel && cuentaSel.activo === false);
@@ -158,15 +210,14 @@ export default function AsientoForm({ onSaved }) {
     [form.partidas, cuentas]
   );
 
-
-
-  const tieneErrores = useMemo( //eroror global: filas con errores o campos vacios
+  const tieneErrores = useMemo(
+    //eroror global: filas con errores o campos vacios
     () => filasConError.some((e) => e.tieneError) || !form.descripcion.trim(),
     [filasConError, form.descripcion]
   );
 
-
-  const guardar = async (e) => {   //guarda el asiento
+  const guardar = async (e) => {
+    //guarda o actualiza el asiento
     e.preventDefault();
 
     if (tieneErrores || !balanced) {
@@ -183,23 +234,32 @@ export default function AsientoForm({ onSaved }) {
         fecha: form.fecha,
         descripcion: form.descripcion.trim(),
         partidas: form.partidas.map((p) => ({
-
           cuentaId: p.cuentaId,
           debe: parseMonto(p.debe),
           haber: parseMonto(p.haber),
         })),
       };
 
-      await api.crearAsiento(req);
-      setForm({
-        fecha: form.fecha,
-        descripcion: "",
-        partidas: [{ cuentaId: "", debe: "", haber: "" }],
-      });
+      if (modo === "editar" && asientoEditar?.id != null) {
+        // 🔹 actualizar
+        await api.actualizarAsiento(asientoEditar.id, req);
+        setAlert("Asiento actualizado correctamente.");
+      } else {
+        // 🔹 crear
+        await api.crearAsiento(req);
+        setAlert("Asiento guardado correctamente.");
+      }
 
-      setAlert("Asiento guardado correctamente.");
+      // reset básico (para nuevo; al editar el padre limpia asientoEditar)
+      setForm((f) => ({
+        fecha: f.fecha,
+        descripcion: "",
+        partidas: [{ cuentaId: "", cuentaTexto: "", debe: "", haber: "" }],
+      }));
+
       onSaved?.();
     } catch (err) {
+      console.error(err);
       setAlert("No se pudo guardar el asiento. Intenta de nuevo.");
     } finally {
       setSaving(false);
@@ -223,9 +283,14 @@ export default function AsientoForm({ onSaved }) {
         {/* encabezado */}
         <div className="px-6 pt-6 pb-3 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900">Formulario de registro</h2>
+            <h2 className="text-2xl font-bold text-slate-900">
+              {modo === "editar"
+                ? "Editar asiento contable"
+                : "Formulario de registro"}
+            </h2>
             <p className="text-sm text-slate-500">
-              Registra un asiento con múltiples partidas. Usa solo Debe o Haber por línea.
+              Registra un asiento con múltiples partidas. Usa solo Debe o Haber
+              por línea.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -258,19 +323,27 @@ export default function AsientoForm({ onSaved }) {
               <input
                 type="date"
                 value={form.fecha}
-                onChange={(e) => setForm((f) => ({ ...f, fecha: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, fecha: e.target.value }))
+                }
                 className="w-full border border-slate-300 rounded-lg p-2.5 bg-white outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm text-slate-700 mb-1">Descripción</label>
+              <label className="block text-sm text-slate-700 mb-1">
+                Descripción
+              </label>
               <input
                 placeholder="Compra de suministros, pago de servicios…"
                 value={form.descripcion}
-                onChange={(e) => setForm((f) => ({ ...f, descripcion: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, descripcion: e.target.value }))
+                }
                 className={
                   "w-full border rounded-lg p-2.5 bg-white outline-none focus:ring-2 focus:ring-blue-500 " +
-                  (!form.descripcion.trim() ? "border-amber-300" : "border-slate-300")
+                  (!form.descripcion.trim()
+                    ? "border-amber-300"
+                    : "border-slate-300")
                 }
               />
               {!form.descripcion.trim() && (
@@ -293,7 +366,9 @@ export default function AsientoForm({ onSaved }) {
                   <th className="py-3 px-3 font-semibold w-[45%]">Cuenta</th>
                   <th className="py-3 px-3 font-semibold w-[18%]">Debe</th>
                   <th className="py-3 px-3 font-semibold w-[18%]">Haber</th>
-                  <th className="py-3 px-3 font-semibold w-[12%] text-center">Acciones</th>
+                  <th className="py-3 px-3 font-semibold w-[12%] text-center">
+                    Acciones
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -301,16 +376,14 @@ export default function AsientoForm({ onSaved }) {
                   const err = filasConError[i];
                   const rowHasError = err.tieneError;
 
-                  const cuentaSel = cuentasActivas.find(
-                    (c) => String(c.id) === String(p.cuentaId)
-                  );
-
                   return (
                     <tr
                       key={i}
                       className={
                         (i % 2 ? "bg-white" : "bg-slate-50") +
-                        (rowHasError ? " outline outline-1 outline-amber-300" : "")
+                        (rowHasError
+                          ? " outline outline-1 outline-amber-300"
+                          : "")
                       }
                     >
                       {/* datalist */}
@@ -320,26 +393,40 @@ export default function AsientoForm({ onSaved }) {
                           placeholder="Buscar por código o nombre…"
                           className={
                             "w-full border rounded-lg p-2.5 bg-white outline-none focus:ring-2 focus:ring-blue-500 " +
-                            (!p.cuentaId || err.inactiva ? "border-amber-300" : "border-slate-300")
+                            (!p.cuentaId || err.inactiva
+                              ? "border-amber-300"
+                              : "border-slate-300")
                           }
-                          value={p.cuentaTexto ?? ""}                              // <- TEXTO LIBRE
-                          onChange={(e) => update(i, "cuentaTexto", e.target.value)}
+                          value={p.cuentaTexto ?? ""} // <- TEXTO LIBRE
+                          onChange={(e) =>
+                            update(i, "cuentaTexto", e.target.value)
+                          }
                           onBlur={(e) => {
-                            const sel = buscarCuentaPorEntrada(e.target.value, cuentasActivas);
-                            if (!sel) update(i, "cuentaTexto", "");               // opcional: limpia si no hay match
+                            const sel = buscarCuentaPorEntrada(
+                              e.target.value,
+                              cuentasActivas
+                            );
+                            if (!sel) update(i, "cuentaTexto", ""); // opcional: limpia si no hay match
                           }}
                         />
                         <datalist id={`cuentas-${i}`}>
                           {cuentasActivas.map((c) => (
-                            <option key={c.id} value={`${c.id} — ${c.nombre}`} />
+                            <option
+                              key={c.id}
+                              value={`${c.id} — ${c.nombre}`}
+                            />
                           ))}
                         </datalist>
 
                         {err.sinCuenta && (
-                          <p className="text-xs text-amber-600 mt-1">Selecciona una cuenta.</p>
+                          <p className="text-xs text-amber-600 mt-1">
+                            Selecciona una cuenta.
+                          </p>
                         )}
                         {err.inactiva && (
-                          <p className="text-xs text-rose-600 mt-1">Esta cuenta está inactiva.</p>
+                          <p className="text-xs text-rose-600 mt-1">
+                            Esta cuenta está inactiva.
+                          </p>
                         )}
                       </td>
 
@@ -351,12 +438,14 @@ export default function AsientoForm({ onSaved }) {
                           step="0.01"
                           min="0"
                           placeholder="0.00"
-                          value={p.debe ?? ""} 
+                          value={p.debe ?? ""}
                           onChange={(e) => update(i, "debe", e.target.value)}
                           onFocus={(e) => e.target.select()}
                           className={
                             "w-full border rounded-lg p-2.5 bg-white outline-none focus:ring-2 focus:ring-blue-500 " +
-                            (err.ambosLlenos ? "border-amber-300" : "border-slate-300")
+                            (err.ambosLlenos
+                              ? "border-amber-300"
+                              : "border-slate-300")
                           }
                         />
                       </td>
@@ -374,7 +463,9 @@ export default function AsientoForm({ onSaved }) {
                           onFocus={(e) => e.target.select()}
                           className={
                             "w-full border rounded-lg p-2.5 bg-white outline-none focus:ring-2 focus:ring-blue-500 " +
-                            (err.ambosLlenos ? "border-amber-300" : "border-slate-300")
+                            (err.ambosLlenos
+                              ? "border-amber-300"
+                              : "border-slate-300")
                           }
                         />
                         {(err.ambosCeros || err.ambosLlenos) && (
@@ -431,15 +522,19 @@ export default function AsientoForm({ onSaved }) {
             <div className="justify-self-end text-sm">
               <div className="inline-grid grid-cols-3 gap-2 items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 shadow-sm">
                 <span className="text-slate-500">Totales:</span>
-                <span className="font-semibold">Debe {totalDebe.toFixed(2)}</span>
-                <span className="font-semibold">Haber {totalHaber.toFixed(2)}</span>
+                <span className="font-semibold">
+                  Debe {totalDebe.toFixed(2)}
+                </span>
+                <span className="font-semibold">
+                  Haber {totalHaber.toFixed(2)}
+                </span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* btn guardar */}
+      {/* btn guardar / cancelar */}
       <div className="flex items-center gap-3">
         <button
           className="px-5 py-2.5 rounded-lg
@@ -449,8 +544,22 @@ export default function AsientoForm({ onSaved }) {
                      transition-colors"
           disabled={saving || !balanced || tieneErrores}
         >
-          {saving ? "Guardando…" : "Guardar asiento"}
+          {saving
+            ? "Guardando…"
+            : modo === "editar"
+            ? "Actualizar asiento"
+            : "Guardar asiento"}
         </button>
+
+        {modo === "editar" && onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-4 py-2.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100"
+          >
+            Cancelar
+          </button>
+        )}
 
         {!balanced && (
           <span className="text-sm text-amber-700">

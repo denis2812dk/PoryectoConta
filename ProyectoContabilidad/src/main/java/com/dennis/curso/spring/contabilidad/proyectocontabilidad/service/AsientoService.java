@@ -8,5 +8,9 @@ import java.util.List;
 
 public interface AsientoService {
     Asiento crear(AsientoRequest req); //metodo abstracto para crear
-    List<Asiento> findAll(); // metodo abstracto para listal todos
+    List<Asiento> findAll();
+
+    Asiento actualizar(Long id, AsientoRequest req);
+    void eliminar(Long id);
+    Asiento findById(Long id);// metodo abstracto para listal todos
 }

@@ -77,6 +77,11 @@ export const api = {
     return http(`/mayor${qs ? `?${qs}` : ""}`);
   },
   getAsientosRecientes: () => http("/asientos"),
+  getAsiento: (id) => http(`/asientos/${id}`),
+  actualizarAsiento: (id, req) =>
+    http(`/asientos/${id}`, { method: "PUT", body: JSON.stringify(req) }),
+  eliminarAsiento: (id) =>
+    http(`/asientos/${id}`, { method: "DELETE" }),
 };
 
 export const reportes = {

@@ -116,6 +116,21 @@ public class ReportesServiceImpl implements ReportesService {
         out.put("totalHaber", totalHaber);
         return out;
     }
+    private static boolean esActivoCorriente(String id) {
+        return id != null && id.startsWith("11"); // AJUSTA según tu catálogo
+    }
+
+    private static boolean esActivoNoCorriente(String id) {
+        return id != null && (id.startsWith("12") || id.startsWith("13")); // AJUSTA
+    }
+
+    private static boolean esPasivoCorriente(String id) {
+        return id != null && id.startsWith("21"); // AJUSTA
+    }
+
+    private static boolean esPasivoNoCorriente(String id) {
+        return id != null && id.startsWith("22"); // AJUSTA
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -157,9 +172,12 @@ public class ReportesServiceImpl implements ReportesService {
         Map<String, Map<String, Object>> mayor = mayorizar();
         Set<String> padres = detectarPadres(mayor.keySet()); // <-- solo hojas
 
-        BigDecimal activos = BigDecimal.ZERO;  // 1xxxx  -> sumar CON SU SIGNO para netear
-        BigDecimal pasivos = BigDecimal.ZERO;  // 2xxxx  -> sumar ABS de saldos negativos (acreedor)
-        BigDecimal capital = BigDecimal.ZERO;  // 3xxxx  -> sumar ABS de saldos negativos (acreedor)
+        // Desglose
+        BigDecimal activoCorriente     = BigDecimal.ZERO;
+        BigDecimal activoNoCorriente   = BigDecimal.ZERO;
+        BigDecimal pasivoCorriente     = BigDecimal.ZERO;
+        BigDecimal pasivoNoCorriente   = BigDecimal.ZERO;
+        BigDecimal capitalContable     = BigDecimal.ZERO;
 
         for (Map<String, Object> cta : mayor.values()) {
             String id = (String) cta.get("cuentaId");
@@ -167,36 +185,73 @@ public class ReportesServiceImpl implements ReportesService {
 
             BigDecimal saldo = (BigDecimal) cta.get("saldo");
 
+            // ACTIVOS (grupo 1) -> se suman con su signo para netear contra-cuentas
             if (startsWith(id, "1")) {
-                activos = activos.add(saldo); // con su signo
-            } else if (startsWith(id, "2")) {
-                if (saldo.compareTo(BigDecimal.ZERO) < 0) {
-                    pasivos = pasivos.add(saldo.abs());
+                if (esActivoCorriente(id)) {
+                    activoCorriente = activoCorriente.add(saldo);
+                } else if (esActivoNoCorriente(id)) {
+                    activoNoCorriente = activoNoCorriente.add(saldo);
+                } else {
+                    // si no cae en ninguna de las anteriores, podrías decidir a dónde mandarla
+                    activoNoCorriente = activoNoCorriente.add(saldo);
                 }
-            } else if (startsWith(id, "3")) {
+            }
+
+            // PASIVOS (grupo 2) -> naturaleza acreedora, tomamos ABS de saldos negativos
+            else if (startsWith(id, "2")) {
                 if (saldo.compareTo(BigDecimal.ZERO) < 0) {
-                    capital = capital.add(saldo.abs());
+                    BigDecimal valor = saldo.abs();
+                    if (esPasivoCorriente(id)) {
+                        pasivoCorriente = pasivoCorriente.add(valor);
+                    } else if (esPasivoNoCorriente(id)) {
+                        pasivoNoCorriente = pasivoNoCorriente.add(valor);
+                    } else {
+                        // si no cae en ninguna de las anteriores, mándalo a pasivo no corriente por defecto
+                        pasivoNoCorriente = pasivoNoCorriente.add(valor);
+                    }
+                }
+            }
+
+            // CAPITAL (grupo 3) -> naturaleza acreedora, ABS de saldos negativos
+            else if (startsWith(id, "3")) {
+                if (saldo.compareTo(BigDecimal.ZERO) < 0) {
+                    capitalContable = capitalContable.add(saldo.abs());
                 }
             }
         }
 
-        // Utilidad completa (positiva o negativa) calculada con la misma regla de hojas
+        // Utilidad (positiva o negativa) calculada de la misma forma que en ER
         Map<String, Object> er = estadoResultados();
         BigDecimal utilidad = (BigDecimal) er.get("utilidad");
 
-        BigDecimal patrimonioTotal = capital.add(utilidad);
+        // Totales
+        BigDecimal totalActivos = activoCorriente.add(activoNoCorriente);
+        BigDecimal patrimonioTotal = capitalContable.add(utilidad);
+        BigDecimal totalPasivos = pasivoCorriente.add(pasivoNoCorriente);
+        BigDecimal totalPasivosMasPatrimonio = totalPasivos.add(patrimonioTotal);
 
         boolean equilibrioOK =
-                activos.setScale(2, RoundingMode.HALF_UP)
-                        .compareTo(pasivos.add(patrimonioTotal).setScale(2, RoundingMode.HALF_UP)) == 0;
+                totalActivos.setScale(2, RoundingMode.HALF_UP)
+                        .compareTo(totalPasivosMasPatrimonio.setScale(2, RoundingMode.HALF_UP)) == 0;
 
         Map<String, Object> out = new LinkedHashMap<>();
-        out.put("activos", activos);
-        out.put("pasivos", pasivos);
-        out.put("capital", capital);
+
+        // Desglose por grupos
+        out.put("activoCorriente", activoCorriente);
+        out.put("activoNoCorriente", activoNoCorriente);
+        out.put("pasivoCorriente", pasivoCorriente);
+        out.put("pasivoNoCorriente", pasivoNoCorriente);
+        out.put("capitalContable", capitalContable);
+
+        // Totales generales (para compatibilidad y para KPIs)
+        out.put("activos", totalActivos);
+        out.put("pasivos", totalPasivos);
+        out.put("capital", capitalContable); // sin utilidad
         out.put("utilidad", utilidad);
         out.put("patrimonioTotal", patrimonioTotal);
+        out.put("totalPasivosMasPatrimonio", totalPasivosMasPatrimonio);
         out.put("equilibrioOK", equilibrioOK);
+
         return out;
     }
 }
